@@ -6,7 +6,7 @@ import { identityService } from './identity'
 import { nostrService } from './service'
 
 export interface ContentSubmission {
-  type: 'culture' | 'exhibition' | 'resource' | 'story'
+  type: 'cultural-story' | 'audio-story' | 'visual-story' | 'cultural-art'
   title: string
   description: string
   content?: string
@@ -14,7 +14,22 @@ export interface ContentSubmission {
   category?: string
   tags?: string[]
   media?: File[]
-  metadata?: Record<string, any>
+  metadata?: {
+    origin?: string
+    culturalContext?: string
+    creator?: string
+    creationDate?: string
+    significance?: string
+    traditionalUse?: string
+    relatedStories?: string[]
+    [key: string]: any
+  }
+  licensing?: {
+    type: string
+    attribution?: string
+    restrictions?: string[]
+    smartContract?: any
+  }
 }
 
 export interface MediaUpload {
@@ -203,25 +218,25 @@ class PublishingService {
     }
 
     switch (submission.type) {
-      case 'culture':
-        return this.createCultureEvent(submission, baseEvent)
+      case 'cultural-story':
+        return this.createCulturalStoryEvent(submission, baseEvent)
         
-      case 'exhibition':
-        return this.createExhibitionEvent(submission, baseEvent)
+      case 'audio-story':
+        return this.createAudioStoryEvent(submission, baseEvent)
         
-      case 'resource':
-        return this.createResourceEvent(submission, baseEvent)
+      case 'visual-story':
+        return this.createVisualStoryEvent(submission, baseEvent)
         
-      case 'story':
-        return this.createStoryEvent(submission, baseEvent)
+      case 'cultural-art':
+        return this.createCulturalArtEvent(submission, baseEvent)
         
       default:
         throw new Error(`Unknown content type: ${submission.type}`)
     }
   }
 
-  // Create NIP-33 culture event (kind 30001)
-  private async createCultureEvent(submission: ContentSubmission, baseEvent: any): Promise<NostrEvent | null> {
+  // Create NIP-23 cultural story event
+  private async createCulturalStoryEvent(submission: ContentSubmission, baseEvent: any): Promise<NostrEvent | null> {
     const event = {
       ...baseEvent,
       kind: 30001,
@@ -237,8 +252,8 @@ class PublishingService {
     return await identityService.signEvent(event)
   }
 
-  // Create NIP-33 exhibition event (kind 30002)
-  private async createExhibitionEvent(submission: ContentSubmission, baseEvent: any): Promise<NostrEvent | null> {
+  // Create NIP-23 audio story event  
+  private async createAudioStoryEvent(submission: ContentSubmission, baseEvent: any): Promise<NostrEvent | null> {
     const event = {
       ...baseEvent,
       kind: 30002,
@@ -254,8 +269,8 @@ class PublishingService {
     return await identityService.signEvent(event)
   }
 
-  // Create NIP-33 resource event (kind 30003)
-  private async createResourceEvent(submission: ContentSubmission, baseEvent: any): Promise<NostrEvent | null> {
+  // Create NIP-23 visual story event
+  private async createVisualStoryEvent(submission: ContentSubmission, baseEvent: any): Promise<NostrEvent | null> {
     const event = {
       ...baseEvent,
       kind: 30003,
@@ -271,8 +286,8 @@ class PublishingService {
     return await identityService.signEvent(event)
   }
 
-  // Create NIP-23 long-form story event
-  private async createStoryEvent(submission: ContentSubmission, baseEvent: any): Promise<NostrEvent | null> {
+  // Create NIP-33 cultural art event
+  private async createCulturalArtEvent(submission: ContentSubmission, baseEvent: any): Promise<NostrEvent | null> {
     const event = {
       ...baseEvent,
       kind: 23,
@@ -316,7 +331,7 @@ class PublishingService {
       errors.push('Description must be less than 2000 characters')
     }
 
-    if (submission.type === 'story' && !submission.content) {
+    if ((submission.type === 'cultural-story' || submission.type === 'audio-story') && !submission.content) {
       errors.push('Story content is required')
     }
 

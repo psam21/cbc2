@@ -23,41 +23,70 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 
 const contentTypes = [
   {
-    id: 'culture',
-    name: 'Culture',
-    description: 'Share information about a cultural community or tradition',
-    icon: Globe,
+    id: 'cultural-story',
+    name: 'Cultural Stories',
+    description: 'Share written narratives, traditional tales, and cultural documentation',
+    icon: BookOpen,
     color: 'blue'
   },
   {
-    id: 'exhibition',
-    name: 'Exhibition',
-    description: 'Curate a collection of cultural artifacts and stories',
-    icon: BookOpen,
-    color: 'purple'
-  },
-  {
-    id: 'resource',
-    name: 'Resource',
-    description: 'Upload educational materials, documents, or media',
-    icon: FileText,
+    id: 'audio-story',
+    name: 'Audio Stories',
+    description: 'Record and preserve audio narratives, songs, and spoken knowledge',
+    icon: Headphones,
     color: 'green'
   },
   {
-    id: 'story',
-    name: 'Elder Story',
-    description: 'Share traditional stories and oral histories',
-    icon: Heart,
+    id: 'visual-story',
+    name: 'Visual Stories',
+    description: 'Share photos, videos, and visual documentation',
+    icon: Image,
+    color: 'purple'
+  },
+  {
+    id: 'cultural-art',
+    name: 'Cultural Art',
+    description: 'Document traditional crafts, artifacts, and artistic expressions',
+    icon: Star,
     color: 'red'
   }
 ]
 
 const categories = {
-  culture: ['indigenous', 'traditional', 'contemporary', 'diaspora', 'regional'],
-  exhibition: ['art', 'history', 'ceremony', 'craft', 'music', 'dance', 'storytelling'],
-  resource: ['education', 'research', 'preservation', 'community', 'art'],
-  story: ['personal', 'historical', 'mythological', 'cultural', 'spiritual']
+  'cultural-story': ['personal', 'historical', 'mythological', 'traditional', 'spiritual'],
+  'audio-story': ['songs', 'chants', 'stories', 'interviews', 'ceremonies'],
+  'visual-story': ['photographs', 'videos', 'artwork', 'documentation', 'ceremonies'],
+  'cultural-art': ['crafts', 'artifacts', 'ceremonial-objects', 'textiles', 'sculptures']
 }
+
+const licenseTypes = [
+  {
+    id: 'cc-by',
+    name: 'Creative Commons - Attribution',
+    description: 'Others can use, modify, and share your work with attribution',
+    recommended: true
+  },
+  {
+    id: 'cc-by-sa',
+    name: 'Creative Commons - Attribution Share Alike',
+    description: 'Others can use and modify with attribution, must share under same license'
+  },
+  {
+    id: 'cc-by-nc',
+    name: 'Creative Commons - Attribution Non-Commercial',
+    description: 'Others can use with attribution, but not for commercial purposes'
+  },
+  {
+    id: 'community-restricted',
+    name: 'Community Restricted',
+    description: 'Only your cultural community can access and use this content'
+  },
+  {
+    id: 'elders-only',
+    name: 'Elders Only',
+    description: 'Restricted to recognized community elders and leaders'
+  }
+]
 
 interface ContributeFormProps {
   initialType?: string
@@ -84,7 +113,21 @@ export function ContributeForm({
     culture: initialCulture ? [initialCulture] : [],
     category: '',
     tags: [],
-    metadata: {}
+    metadata: {
+      origin: '',
+      culturalContext: '',
+      creator: '',
+      creationDate: '',
+      significance: '',
+      traditionalUse: '',
+      relatedStories: []
+    },
+    licensing: {
+      type: 'cc-by',
+      attribution: '',
+      restrictions: [],
+      smartContract: null
+    }
   })
   const [files, setFiles] = useState<File[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -384,6 +427,192 @@ export function ContributeForm({
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                 placeholder="e.g., traditional, ceremony, music (comma-separated)"
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Rich Contextual Metadata */}
+        <div className="bg-white rounded-lg border p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Cultural Context & Metadata
+          </h3>
+          <p className="text-sm text-gray-600 mb-6">
+            Provide rich contextual information to ensure proper understanding and respect for your cultural content.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Origin / Source Community
+              </label>
+              <input
+                type="text"
+                value={formData.metadata?.origin || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, origin: e.target.value }
+                }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="e.g., Hopi Tribe, Arizona"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Creator / Keeper
+              </label>
+              <input
+                type="text"
+                value={formData.metadata?.creator || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, creator: e.target.value }
+                }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="e.g., Elder Maria Santos"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Creation / Documentation Date
+              </label>
+              <input
+                type="date"
+                value={formData.metadata?.creationDate || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, creationDate: e.target.value }
+                }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Traditional Use / Context
+              </label>
+              <input
+                type="text"
+                value={formData.metadata?.traditionalUse || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, traditionalUse: e.target.value }
+                }))}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="e.g., Ceremony, Daily life, Seasonal celebration"
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Cultural Context & Significance
+              </label>
+              <textarea
+                value={formData.metadata?.culturalContext || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, culturalContext: e.target.value }
+                }))}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Explain the cultural significance, historical context, and proper understanding needed..."
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Significance & Meaning
+              </label>
+              <textarea
+                value={formData.metadata?.significance || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  metadata: { ...prev.metadata, significance: e.target.value }
+                }))}
+                rows={3}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="Describe why this is important to your community and what it represents..."
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Licensing & Smart Contract Interface */}
+        <div className="bg-white rounded-lg border p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Licensing & Usage Rights
+          </h3>
+          <p className="text-sm text-gray-600 mb-6">
+            Define how others can use your cultural content while protecting your community's rights.
+          </p>
+
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                Choose License Type
+              </label>
+              <div className="space-y-3">
+                {licenseTypes.map((license) => (
+                  <label key={license.id} className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="license"
+                      value={license.id}
+                      checked={formData.licensing?.type === license.id}
+                      onChange={(e) => setFormData(prev => ({
+                        ...prev,
+                        licensing: { ...prev.licensing, type: e.target.value as string }
+                      }))}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium text-gray-900">{license.name}</span>
+                        {license.recommended && (
+                          <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                            Recommended
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{license.description}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Attribution Requirements
+              </label>
+              <textarea
+                value={formData.licensing?.attribution || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  licensing: { 
+                    type: prev.licensing?.type || 'cc-by',
+                    ...prev.licensing, 
+                    attribution: e.target.value 
+                  }
+                }))}
+                rows={2}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                placeholder="How should users credit your work? e.g., 'Traditional story shared by [Community Name]'"
+              />
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <Info className="w-5 h-5 text-blue-600 mt-0.5" />
+                <div>
+                  <h4 className="font-medium text-blue-900 mb-1">Smart Contract Protection</h4>
+                  <p className="text-sm text-blue-800">
+                    Your licensing terms will be encoded into a smart contract on the Nostr network, 
+                    ensuring immutable protection of your cultural rights and automatic attribution tracking.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

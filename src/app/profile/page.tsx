@@ -20,7 +20,10 @@ import {
   Twitter,
   Download,
   FileDown,
-  Database
+  Database,
+  Headphones,
+  Image,
+  Info
 } from 'lucide-react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -318,10 +321,141 @@ export default function ProfilePage() {
                     Add Contribution
                   </Link>
                 </div>
-                <div className="text-center py-12 text-gray-500">
-                  <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
-                  <p>No contributions yet</p>
-                  <p className="text-sm mt-2">Share your cultural knowledge with the community</p>
+                
+                {/* Mock contributions for demonstration - in production this would fetch from Nostr */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-white border rounded-lg p-6 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                          <BookOpen className="w-5 h-5 text-blue-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">Traditional Weaving Story</h4>
+                          <p className="text-sm text-gray-500">Cultural Story • 2 days ago</p>
+                        </div>
+                      </div>
+                      <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                        Published
+                      </span>
+                    </div>
+                    
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                      A traditional story about the sacred art of weaving passed down through generations in our community...
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span>v1.0</span>
+                        <span>•</span>
+                        <span>3 views</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded hover:border-gray-400 transition-colors">
+                          View History
+                        </button>
+                        <button className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700 border border-purple-300 rounded hover:border-purple-400 transition-colors">
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white border rounded-lg p-6 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                          <Headphones className="w-5 h-5 text-green-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">Elder's Blessing Song</h4>
+                          <p className="text-sm text-gray-500">Audio Story • 1 week ago</p>
+                        </div>
+                      </div>
+                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">
+                        In Review
+                      </span>
+                    </div>
+                    
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                      A traditional blessing song recorded with Elder Maria, explaining its significance in our ceremonies...
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span>v2.1</span>
+                        <span>•</span>
+                        <span>8 views</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded hover:border-gray-400 transition-colors">
+                          View History
+                        </button>
+                        <button className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700 border border-purple-300 rounded hover:border-purple-400 transition-colors">
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-white border rounded-lg p-6 hover:shadow-md transition-shadow">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                          <Image className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div>
+                          <h4 className="font-medium text-gray-900">Pottery Making Process</h4>
+                          <p className="text-sm text-gray-500">Visual Story • 2 weeks ago</p>
+                        </div>
+                      </div>
+                      <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                        Published
+                      </span>
+                    </div>
+                    
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                      Step-by-step visual documentation of traditional pottery making techniques...
+                    </p>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        <span>v1.2</span>
+                        <span>•</span>
+                        <span>15 views</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded hover:border-gray-400 transition-colors">
+                          View History
+                        </button>
+                        <button className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700 border border-purple-300 rounded hover:border-purple-400 transition-colors">
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                  <div className="flex items-start gap-3">
+                    <Info className="w-5 h-5 text-blue-600 mt-0.5" />
+                    <div>
+                      <h4 className="font-medium text-blue-900 mb-2">Version Control & Edit History</h4>
+                      <p className="text-sm text-blue-800 mb-3">
+                        All edits to your contributions are tracked with full version control. 
+                        Previous versions are preserved on the Nostr network for data integrity.
+                      </p>
+                      <ul className="text-sm text-blue-800 space-y-1">
+                        <li>• Click "Edit" to create a new version of your contribution</li>
+                        <li>• "View History" shows all previous versions and changes</li>
+                        <li>• Original submissions are always preserved and verifiable</li>
+                        <li>• Community can access version history for transparency</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

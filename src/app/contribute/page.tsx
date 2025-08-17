@@ -63,88 +63,88 @@ export default function ContributePage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Culture Contribution */}
+              {/* Cultural Stories (Index 9) */}
               <motion.div
                 whileHover={{ y: -4 }}
                 className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-lg transition-all duration-200"
               >
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <Globe className="w-6 h-6 text-blue-600" />
+                  <BookOpen className="w-6 h-6 text-blue-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Share a Culture
+                  Cultural Stories
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Document and share information about a cultural community, tradition, or practice.
+                  Share written narratives, traditional tales, oral histories, and cultural documentation from your community.
                 </p>
                 <button
-                  onClick={() => handleGetStarted('culture')}
+                  onClick={() => handleGetStarted('cultural-story')}
                   className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   Get Started
                 </button>
               </motion.div>
 
-              {/* Exhibition Contribution */}
-              <motion.div
-                whileHover={{ y: -4 }}
-                className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-lg transition-all duration-200"
-              >
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
-                  <BookOpen className="w-6 h-6 text-purple-600" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Create Exhibition
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Curate a collection of cultural artifacts, stories, and media into a themed exhibition.
-                </p>
-                <button
-                  onClick={() => handleGetStarted('exhibition')}
-                  className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-                >
-                  Get Started
-                </button>
-              </motion.div>
-
-              {/* Resource Contribution */}
+              {/* Audio Stories (Index 10) */}
               <motion.div
                 whileHover={{ y: -4 }}
                 className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-lg transition-all duration-200"
               >
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                  <FileText className="w-6 h-6 text-green-600" />
+                  <Music className="w-6 h-6 text-green-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Upload Resource
+                  Audio Stories
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Share educational materials, documents, audio, or other digital resources.
+                  Record and preserve audio narratives, traditional songs, chants, and spoken cultural knowledge.
                 </p>
                 <button
-                  onClick={() => handleGetStarted('resource')}
+                  onClick={() => handleGetStarted('audio-story')}
                   className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                 >
                   Get Started
                 </button>
               </motion.div>
 
-              {/* Story Contribution */}
+              {/* Visual Stories (Index 11) */}
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-lg transition-all duration-200"
+              >
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
+                  <Image className="w-6 h-6 text-purple-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                  Visual Stories
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  Share photos, videos, artwork, and visual documentation that tell your cultural story.
+                </p>
+                <button
+                  onClick={() => handleGetStarted('visual-story')}
+                  className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Get Started
+                </button>
+              </motion.div>
+
+              {/* Cultural Art (Index 12) */}
               <motion.div
                 whileHover={{ y: -4 }}
                 className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-lg transition-all duration-200"
               >
                 <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                  <Heart className="w-6 h-6 text-red-600" />
+                  <Star className="w-6 h-6 text-red-600" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                  Share Elder Story
+                  Cultural Art
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Preserve traditional stories, oral histories, and wisdom from community elders.
+                  Document traditional crafts, artifacts, ceremonial objects, and artistic expressions.
                 </p>
                 <button
-                  onClick={() => handleGetStarted('story')}
+                  onClick={() => handleGetStarted('cultural-art')}
                   className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
                 >
                   Get Started
