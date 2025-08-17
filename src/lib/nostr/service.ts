@@ -111,9 +111,13 @@ export class NostrService {
     await this.ensureInitialized()
     
     try {
+      // Search for cultures published in the last year (31536000 seconds)
+      const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000
+      
       const queryOptions: NostrQueryOptions = {
         kinds: [30001], // NIP-33 kind 30001
-        limit: filters.limit || 20
+        limit: filters.limit || 20,
+        since: oneYearAgo // Search back 1 year
       }
 
       // Add tag filters
@@ -161,9 +165,13 @@ export class NostrService {
     await this.ensureInitialized()
     
     try {
+      // Search for exhibitions published in the last year (31536000 seconds)
+      const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000
+      
       const queryOptions: NostrQueryOptions = {
         kinds: [30002], // NIP-33 kind 30002
-        limit: filters.limit || 20
+        limit: filters.limit || 20,
+        since: oneYearAgo // Search back 1 year
       }
 
       // Add tag filters
@@ -209,9 +217,13 @@ export class NostrService {
     await this.ensureInitialized()
     
     try {
+      // Search for resources published in the last year (31536000 seconds)
+      const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000
+      
       const queryOptions: NostrQueryOptions = {
         kinds: [30003], // NIP-33 kind 30003
-        limit: filters.limit || 20
+        limit: filters.limit || 20,
+        since: oneYearAgo // Search back 1 year
       }
 
       // Add tag filters
@@ -252,9 +264,13 @@ export class NostrService {
     await this.ensureInitialized()
     
     try {
+      // Search for elder stories published in the last year (31536000 seconds)
+      const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000
+      
       const queryOptions: NostrQueryOptions = {
-        kinds: [23], // NIP-23
-        limit: filters.limit || 20
+        kinds: [30004], // NIP-33 kind 30004
+        limit: filters.limit || 20,
+        since: oneYearAgo // Search back 1 year
       }
 
       // Add tag filters
