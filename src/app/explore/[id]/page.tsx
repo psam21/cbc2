@@ -92,7 +92,7 @@ export default function CultureDetailPage() {
   const [culture, setCulture] = useState<Culture | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const { nostrEnabled } = useNostr()
+  const { isEnabled } = useNostr()
 
   useEffect(() => {
     const loadCulture = async () => {
@@ -119,7 +119,7 @@ export default function CultureDetailPage() {
     }
 
     loadCulture()
-  }, [params.id, nostrEnabled])
+  }, [params.id, isEnabled])
 
   if (loading) {
     return (
@@ -136,7 +136,7 @@ export default function CultureDetailPage() {
       <div className="min-h-screen bg-gray-50 pt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ErrorBoundary 
-            error={error || 'Culture not found'} 
+            error={new Error(error || 'Culture not found')} 
             reset={() => router.back()} 
           />
         </div>

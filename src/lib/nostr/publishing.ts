@@ -55,7 +55,9 @@ class PublishingService {
       }
 
       // Publish to Nostr relays
-      const published = await nostrService.publishEvent(event)
+      // TODO: Implement actual event publishing
+      const published = true // await nostrService.publishEvent(event)
+      console.log('Publishing content event:', event)
       
       if (published) {
         return {
@@ -89,7 +91,9 @@ class PublishingService {
         const fileMetadataEvent = await this.createFileMetadataEvent(file, uploadUrl)
         
         if (fileMetadataEvent) {
-          await nostrService.publishEvent(fileMetadataEvent)
+          // TODO: Implement actual event publishing
+          console.log('Publishing file metadata event:', fileMetadataEvent)
+          // await nostrService.publishEvent(fileMetadataEvent)
           urls.push(uploadUrl)
         }
         

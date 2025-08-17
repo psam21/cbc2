@@ -70,7 +70,7 @@ const mockEvents: CommunityEvent[] = [
     startDate: '2024-02-15T18:00:00Z',
     endDate: '2024-02-15T21:00:00Z',
     location: 'Community Center, Auckland',
-    type: 'storytelling',
+    type: 'performance',
     culture: ['Māori'],
     organizer: 'pub2',
     attendees: ['pub1', 'pub2'],
@@ -207,8 +207,11 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('members')
   
-  const [searchQuery, setSearchQuery] = useQueryParamState('q', '')
-  const [expertiseFilter, setExpertiseFilter] = useQueryParamState('expertise', '')
+  const { queryParams, setQueryParam } = useQueryParamState({ q: '', expertise: '' })
+  const searchQuery = queryParams.q
+  const expertiseFilter = queryParams.expertise
+  const setSearchQuery = (value: string) => setQueryParam('q', value)
+  const setExpertiseFilter = (value: string) => setQueryParam('expertise', value)
   
   const debouncedSearch = useDebounce(searchQuery, 300)
 

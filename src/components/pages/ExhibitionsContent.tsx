@@ -248,18 +248,30 @@ const ExhibitionCard = ({ exhibition }: { exhibition: Exhibition }) => {
   )
 }
 
-export default function ExhibitionsContent() {
+export function ExhibitionsContent() {
   const [exhibitions, setExhibitions] = useState<Exhibition[]>([])
   const [loading, setLoading] = useState(true)
   const [totalResults, setTotalResults] = useState(0)
-  const { nostrEnabled } = useNostr()
+  const { isEnabled } = useNostr()
 
   // URL state management
-  const [searchQuery, setSearchQuery] = useQueryParamState('q', '')
-  const [category, setCategory] = useQueryParamState('category', '')
-  const [region, setRegion] = useQueryParamState('region', '')
-  const [sortBy, setSortBy] = useQueryParamState('sort', 'newest')
-  const [page, setPage] = useQueryParamState('page', '1')
+  const { queryParams, setQueryParam } = useQueryParamState({
+    q: '', 
+    category: '', 
+    region: '', 
+    sort: 'newest', 
+    page: '1'
+  })
+  const searchQuery = queryParams.q
+  const category = queryParams.category
+  const region = queryParams.region
+  const sortBy = queryParams.sort
+  const page = queryParams.page
+  const setSearchQuery = (value: string) => setQueryParam('q', value)
+  const setCategory = (value: string) => setQueryParam('category', value)
+  const setRegion = (value: string) => setQueryParam('region', value)
+  const setSortBy = (value: string) => setQueryParam('sort', value)
+  const setPage = (value: string) => setQueryParam('page', value)
 
   const debouncedSearch = useDebounce(searchQuery, 300)
 
@@ -321,7 +333,7 @@ export default function ExhibitionsContent() {
     } finally {
       setLoading(false)
     }
-  }, [debouncedSearch, category, region, sortBy, nostrEnabled])
+  }, [debouncedSearch, category, region, sortBy, isEnabled])
 
   useEffect(() => {
     loadExhibitions()
@@ -422,10 +434,14 @@ export default function ExhibitionsContent() {
                 "Try adjusting your search criteria or clearing filters" :
                 "Check back soon for new cultural exhibitions"
               }
-              action={hasActiveFilters ? {
-                label: "Clear filters",
-                onClick: clearFilters
-              } : undefined}
+              action={hasActiveFilters ? (
+                <button
+                  onClick={clearFilters}
+                  className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Clear filters
+                </button>
+              ) : undefined}
             />
           )}
         </>

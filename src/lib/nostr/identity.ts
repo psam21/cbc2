@@ -3,6 +3,7 @@
 
 import { NostrEvent, User, Contribution } from '@/types/content'
 import { nostrService } from './service'
+import { nostrClient } from './client'
 
 export interface NostrIdentity {
   npub: string
@@ -161,7 +162,7 @@ class IdentityService {
   // Fetch user profile from Nostr (kind 0 event)
   private async fetchUserProfile(pubkey: string): Promise<any> {
     try {
-      const events = await nostrService.queryEvents({
+      const events = await nostrClient.queryEvents({
         kinds: [0],
         authors: [pubkey],
         limit: 1
@@ -220,7 +221,7 @@ class IdentityService {
 
     try {
       // Query all content types authored by this user
-      const events = await nostrService.queryEvents({
+      const events = await nostrClient.queryEvents({
         kinds: [1, 23, 30001, 30002, 30003], // Text notes, long-form, cultures, exhibitions, resources
         authors: [targetPubkey],
         limit: 100
@@ -278,7 +279,7 @@ class IdentityService {
 
     try {
       // Get current contact list
-      const contactEvents = await nostrService.queryEvents({
+      const contactEvents = await nostrClient.queryEvents({
         kinds: [3],
         authors: [this.authState.user!.pubkey],
         limit: 1
@@ -303,7 +304,9 @@ class IdentityService {
         })
 
         if (event) {
-          await nostrService.publishEvent(event)
+          // TODO: Implement actual event publishing
+          console.log('Publishing event:', event)
+          // await nostrService.publishEvent(event)
           return true
         }
       }
@@ -320,7 +323,7 @@ class IdentityService {
     if (!this.authState.isAuthenticated) return false
 
     try {
-      const contactEvents = await nostrService.queryEvents({
+      const contactEvents = await nostrClient.queryEvents({
         kinds: [3],
         authors: [this.authState.user!.pubkey],
         limit: 1

@@ -107,6 +107,13 @@ const AudioPlayer = ({ audioUrl, title }: { audioUrl?: string; title: string }) 
   const [isMuted, setIsMuted] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
 
+  // Sync volume with audio element
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume
+    }
+  }, [volume])
+
   const togglePlayPause = () => {
     if (!audioRef.current || !audioUrl) return
     
@@ -156,11 +163,15 @@ const AudioPlayer = ({ audioUrl, title }: { audioUrl?: string; title: string }) 
       <audio
         ref={audioRef}
         src={audioUrl}
-        onLoadedMetadata={() => setDuration(audioRef.current?.duration || 0)}
+        onLoadedMetadata={() => {
+          if (audioRef.current) {
+            setDuration(audioRef.current.duration)
+            audioRef.current.volume = volume
+          }
+        }}
         onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime || 0)}
         onEnded={() => setIsPlaying(false)}
         muted={isMuted}
-        volume={volume}
       />
 
       {/* Progress bar */}
@@ -211,7 +222,7 @@ export default function ElderStoryDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [showTranscript, setShowTranscript] = useState(false)
-  const { nostrEnabled } = useNostr()
+  const { isEnabled } = useNostr()
 
   useEffect(() => {
     const loadStory = async () => {
@@ -238,7 +249,7 @@ export default function ElderStoryDetailPage() {
     }
 
     loadStory()
-  }, [params.id, nostrEnabled])
+  }, [params.id, isEnabled])
 
   const handleRating = (rating: number) => {
     if (!story) return
@@ -268,7 +279,7 @@ export default function ElderStoryDetailPage() {
       <div className="min-h-screen bg-gray-50 pt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ErrorBoundary 
-            error={error || 'Story not found'} 
+            error={new Error(error || 'Story not found')} 
             reset={() => router.back()} 
           />
         </div>

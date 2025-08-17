@@ -135,7 +135,7 @@ export default function ResourceDetailPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [downloading, setDownloading] = useState(false)
-  const { nostrEnabled } = useNostr()
+  const { isEnabled } = useNostr()
 
   useEffect(() => {
     const loadResource = async () => {
@@ -162,7 +162,7 @@ export default function ResourceDetailPage() {
     }
 
     loadResource()
-  }, [params.id, nostrEnabled])
+  }, [params.id, isEnabled])
 
   const handleDownload = async () => {
     if (!resource) return
@@ -196,7 +196,7 @@ export default function ResourceDetailPage() {
       <div className="min-h-screen bg-gray-50 pt-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <ErrorBoundary 
-            error={error || 'Resource not found'} 
+            error={new Error(error || 'Resource not found')} 
             reset={() => router.back()} 
           />
         </div>
