@@ -5,26 +5,61 @@ import Link from 'next/link'
 import { ArrowRight, Globe, Heart, BookOpen, Search, Users, MapPin } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-// Mock proof data - in production this would come from Nostr
-const proofStats = [
-  { count: '2,137', label: 'stories preserved', detail: 'across 64 communities' },
-  { count: '89', label: 'languages documented', detail: 'from endangered to thriving' },
-  { count: '1,024', label: 'contributors', detail: 'elders, scholars, community members' }
-]
+// Real data structure for platform statistics
+interface PlatformStats {
+  storiesCount: number
+  languagesCount: number
+  contributorsCount: number
+  communitiesCount: number
+}
 
 const searchExamples = ['Yoruba weaving', 'Ladakh lullabies', 'Maori carving', 'Inuit survival', 'Aboriginal dreamtime']
 
 export function HomeHero() {
   const [currentStat, setCurrentStat] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
+  const [platformStats, setPlatformStats] = useState<PlatformStats | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  // Fetch real platform statistics
+  useEffect(() => {
+    const fetchPlatformStats = async () => {
+      try {
+        // TODO: Replace with actual Nostr query for platform statistics
+        // For now, show loading state
+        setLoading(false)
+        // In production, this would fetch from Nostr:
+        // const stats = await nostrService.getPlatformStats()
+        // setPlatformStats(stats)
+      } catch (error) {
+        console.error('Failed to fetch platform stats:', error)
+        setLoading(false)
+      }
+    }
+
+    fetchPlatformStats()
+  }, [])
+
+  // Generate proof stats from real data or show loading
+  const proofStats = platformStats ? [
+    { count: platformStats.storiesCount.toLocaleString(), label: 'stories preserved', detail: `across ${platformStats.communitiesCount} communities` },
+    { count: platformStats.languagesCount.toString(), label: 'languages documented', detail: 'from endangered to thriving' },
+    { count: platformStats.contributorsCount.toLocaleString(), label: 'contributors', detail: 'elders, scholars, community members' }
+  ] : [
+    { count: '...', label: 'stories preserved', detail: 'across communities' },
+    { count: '...', label: 'languages documented', detail: 'from endangered to thriving' },
+    { count: '...', label: 'contributors', detail: 'elders, scholars, community members' }
+  ]
 
   // Rotate through proof stats
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStat((prev) => (prev + 1) % proofStats.length)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [])
+    if (!loading) {
+      const interval = setInterval(() => {
+        setCurrentStat((prev) => (prev + 1) % proofStats.length)
+      }, 4000)
+      return () => clearInterval(interval)
+    }
+  }, [loading, proofStats.length])
 
   return (
     <section className="relative overflow-hidden">

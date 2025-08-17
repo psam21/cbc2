@@ -23,7 +23,8 @@ import {
   Database,
   Headphones,
   Image,
-  Info
+  Info,
+  Loader2
 } from 'lucide-react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -35,6 +36,47 @@ export default function ProfilePage() {
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
   const [exportLoading, setExportLoading] = useState(false)
+  const [contributions, setContributions] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchContributions = async () => {
+      if (!user?.pubkey) return
+      try {
+        // In a real application, you would fetch contributions from your Nostr client
+        // For now, we'll simulate fetching a few contributions
+        await new Promise(resolve => setTimeout(resolve, 1000))
+        setContributions([
+          {
+            id: '1',
+            title: 'Traditional Weaving Patterns',
+            description: 'A detailed guide on traditional weaving techniques and patterns from our community.',
+            type: 'Cultural Story',
+            createdAt: '2023-10-20T10:00:00Z',
+            updatedAt: '2023-10-20T10:00:00Z'
+          },
+          {
+            id: '2',
+            title: 'Elder Maria\'s Blessing Song',
+            description: 'A beautiful blessing song recorded by Elder Maria, explaining its significance in our ceremonies.',
+            type: 'Audio Story',
+            createdAt: '2023-10-15T14:00:00Z',
+            updatedAt: '2023-10-15T14:00:00Z'
+          },
+          {
+            id: '3',
+            title: 'Traditional Pottery Making',
+            description: 'Step-by-step visual documentation of traditional pottery making techniques.',
+            type: 'Visual Story',
+            createdAt: '2023-10-10T09:00:00Z',
+            updatedAt: '2023-10-10T09:00:00Z'
+          }
+        ])
+      } catch (error) {
+        console.error('Failed to fetch contributions:', error)
+      }
+    }
+    fetchContributions()
+  }, [user?.pubkey])
 
   const handleCopyNpub = async () => {
     if (!user?.npub) return
@@ -322,121 +364,60 @@ export default function ProfilePage() {
                   </Link>
                 </div>
                 
-                {/* Mock contributions for demonstration - in production this would fetch from Nostr */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white border rounded-lg p-6 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <BookOpen className="w-5 h-5 text-blue-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900">Traditional Weaving Story</h4>
-                          <p className="text-sm text-gray-500">Cultural Story • 2 days ago</p>
-                        </div>
-                      </div>
-                      <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
-                        Published
-                      </span>
-                    </div>
-                    
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      A traditional story about the sacred art of weaving passed down through generations in our community...
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span>v1.0</span>
-                        <span>•</span>
-                        <span>3 views</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded hover:border-gray-400 transition-colors">
-                          View History
-                        </button>
-                        <button className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700 border border-purple-300 rounded hover:border-purple-400 transition-colors">
-                          Edit
-                        </button>
+                {/* Contributions Section */}
+                <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
+                  <h3 className="text-2xl font-bold text-[#1A1A2E] mb-6">My Contributions</h3>
+                  
+                  {loading ? (
+                    <div className="text-center py-8">
+                      <div className="flex items-center justify-center gap-3 text-[#4A4A4A]">
+                        <Loader2 className="w-6 h-6 animate-spin" />
+                        <span>Loading contributions...</span>
                       </div>
                     </div>
-                  </div>
-
-                  <div className="bg-white border rounded-lg p-6 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                          <Headphones className="w-5 h-5 text-green-600" />
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900">Elder's Blessing Song</h4>
-                          <p className="text-sm text-gray-500">Audio Story • 1 week ago</p>
-                        </div>
-                      </div>
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs rounded-full">
-                        In Review
-                      </span>
+                  ) : contributions.length === 0 ? (
+                    <div className="text-center py-8">
+                      <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                      <h4 className="text-xl font-bold text-[#1A1A2E] mb-2">No Contributions Yet</h4>
+                      <p className="text-[#4A4A4A] mb-6">Start contributing to cultural preservation by sharing stories, resources, or creating exhibitions.</p>
+                      <Link
+                        href="/contribute"
+                        className="inline-flex items-center justify-center px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors"
+                      >
+                        Start Contributing
+                      </Link>
                     </div>
-                    
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      A traditional blessing song recorded with Elder Maria, explaining its significance in our ceremonies...
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span>v2.1</span>
-                        <span>•</span>
-                        <span>8 views</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded hover:border-gray-400 transition-colors">
-                          View History
-                        </button>
-                        <button className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700 border border-purple-300 rounded hover:border-purple-400 transition-colors">
-                          Edit
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white border rounded-lg p-6 hover:shadow-md transition-shadow">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                          <Image className="w-5 h-5 text-purple-600" />
+                  ) : (
+                    <div className="space-y-4">
+                      {contributions.map((contribution) => (
+                        <div key={contribution.id} className="border border-gray-200 rounded-xl p-4 hover:border-orange-300 transition-colors">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="font-semibold text-[#1A1A2E] mb-1">{contribution.title}</h4>
+                              <p className="text-[#4A4A4A] text-sm mb-2">{contribution.description}</p>
+                              <div className="flex items-center gap-4 text-xs text-[#4A4A4A]">
+                                <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full font-medium">
+                                  {contribution.type}
+                                </span>
+                                <span>{new Date(contribution.createdAt).toLocaleDateString()}</span>
+                                {contribution.updatedAt !== contribution.createdAt && (
+                                  <span>Updated {new Date(contribution.updatedAt).toLocaleDateString()}</span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex space-x-2">
+                              <button className="px-3 py-1 text-sm text-orange-600 hover:text-orange-700 font-medium">
+                                Edit
+                              </button>
+                              <button className="px-3 py-1 text-sm text-blue-600 hover:text-blue-700 font-medium">
+                                View
+                              </button>
+                            </div>
+                          </div>
                         </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900">Pottery Making Process</h4>
-                          <p className="text-sm text-gray-500">Visual Story • 2 weeks ago</p>
-                        </div>
-                      </div>
-                      <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
-                        Published
-                      </span>
+                      ))}
                     </div>
-                    
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      Step-by-step visual documentation of traditional pottery making techniques...
-                    </p>
-                    
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4 text-sm text-gray-500">
-                        <span>v1.2</span>
-                        <span>•</span>
-                        <span>15 views</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2">
-                        <button className="px-3 py-1 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded hover:border-gray-400 transition-colors">
-                          View History
-                        </button>
-                        <button className="px-3 py-1 text-sm text-purple-600 hover:text-purple-700 border border-purple-300 rounded hover:border-purple-400 transition-colors">
-                          Edit
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">

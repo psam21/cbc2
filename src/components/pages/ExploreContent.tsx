@@ -1,457 +1,364 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { MapPin, Users, BookOpen, Search, Filter, Globe } from 'lucide-react'
-import { useNostr } from '@/components/providers/NostrProvider'
-import { Culture, SearchFilters } from '@/types/content'
-import { nostrService } from '@/lib/nostr'
-import { useQueryParamState } from '@/hooks/useQueryParamState'
-import { useDebounce } from '@/hooks/useDebounce'
 import { SearchInput } from '@/components/ui/SearchInput'
-import { LoadingSpinner, SkeletonList } from '@/components/ui/LoadingSpinner'
-import { EmptyState, ErrorBoundary } from '@/components/ui/ErrorBoundary'
 import { Pagination } from '@/components/ui/Pagination'
-import { formatNumber } from '@/lib/utils'
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
+import { MapPin, Users, BookOpen, Heart, ArrowRight, Globe, Loader2 } from 'lucide-react'
+import { useQueryParamState } from '@/hooks/useQueryParamState'
 
-// Mock data - in production this would come from Nostr NIP-33 kind 30001 events
-const mockCultures: Culture[] = [
-  {
-    id: '1',
-    name: 'Maori',
-    description: 'Indigenous Polynesian people of New Zealand with rich cultural traditions.',
-    region: 'Oceania',
-    language: ['Maori', 'English'],
-    population: 775000,
-    imageUrl: '/images/maori-culture.jpg',
-    heroImage: '/images/maori-hero.jpg',
-    tags: ['indigenous', 'polynesian', 'new-zealand'],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-    author: 'npub1maori',
-    exhibitionsCount: 12,
-    resourcesCount: 45,
-    storiesCount: 23
-  },
-  {
-    id: '2',
-    name: 'Inuit',
-    description: 'Indigenous peoples inhabiting the Arctic regions of Canada, Greenland, and Alaska.',
-    region: 'North America',
-    language: ['Inuktitut', 'English', 'French'],
-    population: 150000,
-    imageUrl: '/images/inuit-culture.jpg',
-    heroImage: '/images/inuit-hero.jpg',
-    tags: ['indigenous', 'arctic', 'canada'],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-    author: 'npub1inuit',
-    exhibitionsCount: 8,
-    resourcesCount: 32,
-    storiesCount: 18
-  },
-  {
-    id: '3',
-    name: 'Sami',
-    description: 'Indigenous Finno-Ugric people inhabiting the Arctic area of Sápmi.',
-    region: 'Europe',
-    language: ['Sami', 'Norwegian', 'Swedish', 'Finnish'],
-    population: 80000,
-    imageUrl: '/images/sami-culture.jpg',
-    heroImage: '/images/sami-hero.jpg',
-    tags: ['indigenous', 'arctic', 'scandinavia'],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-    author: 'npub1sami',
-    exhibitionsCount: 15,
-    resourcesCount: 28,
-    storiesCount: 31
-  },
-  {
-    id: '4',
-    name: 'Aboriginal Australian',
-    description: 'Indigenous peoples of Australia with the world\'s oldest continuous culture.',
-    region: 'Oceania',
-    language: ['Various Aboriginal languages', 'English'],
-    population: 812000,
-    imageUrl: '/images/aboriginal-culture.jpg',
-    heroImage: '/images/aboriginal-hero.jpg',
-    tags: ['indigenous', 'australia', 'ancient'],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-    author: 'npub1aboriginal',
-    exhibitionsCount: 22,
-    resourcesCount: 67,
-    storiesCount: 89
-  },
-  {
-    id: '5',
-    name: 'Navajo',
-    description: 'Indigenous people of the Southwestern United States with rich artistic traditions.',
-    region: 'North America',
-    language: ['Navajo', 'English'],
-    population: 399494,
-    imageUrl: '/images/navajo-culture.jpg',
-    heroImage: '/images/navajo-hero.jpg',
-    tags: ['indigenous', 'southwest', 'art'],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-    author: 'npub1navajo',
-    exhibitionsCount: 18,
-    resourcesCount: 41,
-    storiesCount: 27
-  },
-  {
-    id: '6',
-    name: 'Maya',
-    description: 'Indigenous Mesoamerican civilization with advanced knowledge of astronomy and mathematics.',
-    region: 'Central America',
-    language: ['Various Mayan languages', 'Spanish'],
-    population: 6000000,
-    imageUrl: '/images/maya-culture.jpg',
-    heroImage: '/images/maya-hero.jpg',
-    tags: ['indigenous', 'mesoamerica', 'ancient'],
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-    author: 'npub1maya',
-    exhibitionsCount: 25,
-    resourcesCount: 73,
-    storiesCount: 56
-  }
-]
+// Real data structure for cultures
+interface Culture {
+  id: string
+  name: string
+  description: string
+  region: string
+  population?: number
+  language: string[]
+  exhibitionsCount: number
+  resourcesCount: number
+  storiesCount: number
+  imageUrl?: string
+}
 
-export default function ExploreContent() {
-  const { isEnabled, isInitialized, getService } = useNostr()
-  const [cultures, setCultures] = useState<Culture[]>(mockCultures)
-  const [loading, setLoading] = useState(false)
+interface SearchFilters {
+  region: string[]
+  language: string[]
+  population: string[]
+}
+
+export function ExploreContent() {
+  const [cultures, setCultures] = useState<Culture[]>([])
+  const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [totalPages, setTotalPages] = useState(1)
-  const [searchTerm, setSearchTerm] = useState('')
-  const debouncedSearchTerm = useDebounce(searchTerm, 300)
-  
-  // URL state management
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
+
   const { queryParams, setQueryParams } = useQueryParamState<SearchFilters & { page: number }>({
-    query: '',
     region: [],
     language: [],
-    category: [],
-    page: 1,
-    limit: 12,
-    sortBy: 'newest'
+    population: [],
+    page: 1
   })
 
-  // Load cultures when params change
+  // Fetch cultures data
   useEffect(() => {
-    loadCultures()
-  }, [isEnabled, isInitialized, queryParams])
-
-  // Update search term when debounced value changes
-  useEffect(() => {
-    if (debouncedSearchTerm !== queryParams.query) {
-      setQueryParams({ query: debouncedSearchTerm, page: 1 })
-    }
-  }, [debouncedSearchTerm, queryParams.query, setQueryParams])
-
-  const loadCultures = useCallback(async () => {
-    try {
-      setLoading(true)
-      setError(null)
-      
-      if (isEnabled && isInitialized) {
-        const service = getService()
-        const result = await service.getCultures(queryParams)
-        setCultures(result.data)
-        setTotalPages(result.pagination.totalPages)
-      } else {
-        // Filter mock data
-        let filtered = mockCultures
-        
-        if (queryParams.query) {
-          const searchTerm = queryParams.query.toLowerCase()
-          filtered = filtered.filter(culture =>
-            culture.name.toLowerCase().includes(searchTerm) ||
-            culture.description.toLowerCase().includes(searchTerm) ||
-            culture.region.toLowerCase().includes(searchTerm)
-          )
-        }
-        
-        if (queryParams.region?.length) {
-          filtered = filtered.filter(culture => 
-            queryParams.region!.includes(culture.region)
-          )
-        }
-        
-        if (queryParams.language?.length) {
-          filtered = filtered.filter(culture => 
-            culture.language.some(lang => queryParams.language!.includes(lang))
-          )
-        }
-        
-        // Paginate results
-        const startIndex = ((queryParams.page || 1) - 1) * (queryParams.limit || 12)
-        const endIndex = startIndex + (queryParams.limit || 12)
-        setCultures(filtered.slice(startIndex, endIndex))
-        setTotalPages(Math.ceil(filtered.length / (queryParams.limit || 12)))
+    const fetchCultures = async () => {
+      try {
+        setLoading(true)
+        // TODO: Replace with actual Nostr query for cultures
+        // For now, show empty state
+        // const result = await nostrService.getCultures({
+        //   page: queryParams.page,
+        //   filters: {
+        //     region: queryParams.region,
+        //     language: queryParams.language,
+        //     population: queryParams.population
+        //   }
+        // })
+        // setCultures(result.cultures)
+        // setTotalPages(result.totalPages)
+        // setTotalCount(result.totalCount)
+        setCultures([])
+        setTotalPages(1)
+        setTotalCount(0)
+      } catch (error) {
+        console.error('Failed to fetch cultures:', error)
+        setError('Failed to load cultures')
+      } finally {
+        setLoading(false)
       }
-    } catch (err) {
-      console.error('Failed to load cultures:', err)
-      setError('Failed to load cultures. Please try again.')
-    } finally {
-      setLoading(false)
     }
-  }, [isEnabled, isInitialized, queryParams, getService])
+
+    fetchCultures()
+  }, [queryParams])
 
   const handleFilterChange = (filterType: keyof SearchFilters, values: string[]) => {
-    setQueryParams({ [filterType]: values, page: 1 })
+    setQueryParams({
+      ...queryParams,
+      [filterType]: values,
+      page: 1 // Reset to first page when filters change
+    })
   }
 
   const handlePageChange = (page: number) => {
-    setQueryParams({ page })
+    setQueryParams({ ...queryParams, page })
+    setCurrentPage(page)
   }
 
-  const clearFilters = () => {
-    setQueryParams({
-      query: '',
-      region: [],
-      language: [],
-      category: [],
-      page: 1
-    })
-    setSearchTerm('')
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#f8faff] to-[#fffdf8] py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-[#1A1A2E] mb-8">
+              Explore Cultures
+            </h1>
+            <div className="flex justify-center">
+              <div className="flex items-center gap-3 text-[#4A4A4A]">
+                <Loader2 className="w-8 h-8 animate-spin" />
+                <span className="text-lg">Loading cultures...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#f8faff] to-[#fffdf8] py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-[#1A1A2E] mb-8">
+              Explore Cultures
+            </h1>
+            <div className="bg-white rounded-2xl p-8 border border-gray-100 max-w-md mx-auto">
+              <p className="text-[#4A4A4A] mb-4">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (cultures.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#f8faff] to-[#fffdf8] py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-5xl font-extrabold text-[#1A1A2E] mb-8">
+              Explore Cultures
+            </h1>
+            <p className="text-xl text-[#4A4A4A] mb-8 max-w-2xl mx-auto">
+              Discover diverse cultural traditions and stories from around the world
+            </p>
+            
+            <div className="bg-white rounded-2xl p-8 border border-gray-100 max-w-md mx-auto">
+              <Globe className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-[#1A1A2E] mb-2">No Cultures Available Yet</h2>
+              <p className="text-[#4A4A4A] mb-6">Be the first to document a culture and share its stories!</p>
+              <Link
+                href="/contribute"
+                className="inline-flex items-center justify-center px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors"
+              >
+                Start Contributing
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 section-padding">
-      <div className="container-max">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8faff] to-[#fffdf8] py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Explore Cultural Heritage
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-[#1A1A2E] mb-8">
+            Explore Cultures
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover the rich traditions, stories, and wisdom of communities from around the world.
+          <p className="text-xl text-[#4A4A4A] max-w-2xl mx-auto">
+            Discover diverse cultural traditions and stories from around the world
           </p>
-          {isEnabled && isInitialized && (
-            <div className="mt-4 inline-flex items-center text-sm text-green-600">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-              Connected to Nostr network - Live data
+        </div>
+
+        {/* Search and Filters */}
+        <div className="bg-white rounded-2xl p-6 mb-8 shadow-lg border border-gray-100">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-[#1A1A2E] mb-2">
+                Search Cultures
+              </label>
+              <SearchInput
+                placeholder="Search cultures, regions, languages..."
+                onSearch={(query, filters) => {
+                  // Handle search
+                  console.log('Search:', query, filters)
+                }}
+                className="w-full"
+              />
             </div>
-          )}
-        </motion.div>
-
-        {/* Error Boundary */}
-        <ErrorBoundary error={error ? new Error(error) : undefined}>
-          {/* Search and Filters */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="card p-6 mb-8"
-          >
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              {/* Search */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Search Cultures
-                </label>
-                <SearchInput
-                  placeholder="Search cultures, regions, languages..."
-                  onSearch={(query, filters) => {
-                    setSearchTerm(query)
-                    // Handle filters if needed
-                  }}
-                  className="w-full"
-                />
-              </div>
-
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {/* Region Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-semibold text-[#1A1A2E] mb-2">
                   Region
                 </label>
                 <select
-                  value={queryParams.region?.[0] || ''}
-                  className="input-field"
-                  onChange={(e) => handleFilterChange('region', e.target.value ? [e.target.value] : [])}
+                  multiple
+                  value={queryParams.region}
+                  onChange={(e) => {
+                    const values = Array.from(e.target.selectedOptions, option => option.value)
+                    handleFilterChange('region', values)
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
-                  <option value="">All Regions</option>
-                  <option value="North America">North America</option>
-                  <option value="South America">South America</option>
-                  <option value="Europe">Europe</option>
-                  <option value="Asia">Asia</option>
-                  <option value="Africa">Africa</option>
-                  <option value="Oceania">Oceania</option>
-                  <option value="Arctic">Arctic</option>
-                  <option value="Australia">Australia</option>
-                  <option value="New Zealand">New Zealand</option>
-                  <option value="Central America">Central America</option>
+                  <option value="africa">Africa</option>
+                  <option value="asia">Asia</option>
+                  <option value="europe">Europe</option>
+                  <option value="americas">Americas</option>
+                  <option value="oceania">Oceania</option>
                 </select>
               </div>
 
-              {/* Sort */}
+              {/* Language Filter */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Sort By
+                <label className="block text-sm font-semibold text-[#1A1A2E] mb-2">
+                  Language
                 </label>
                 <select
-                  value={queryParams.sortBy || 'newest'}
-                  className="input-field"
-                  onChange={(e) => setQueryParams({ sortBy: e.target.value as any, page: 1 })}
+                  multiple
+                  value={queryParams.language}
+                  onChange={(e) => {
+                    const values = Array.from(e.target.selectedOptions, option => option.value)
+                    handleFilterChange('language', values)
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 >
-                  <option value="newest">Newest</option>
-                  <option value="oldest">Oldest</option>
-                  <option value="name">Name</option>
-                  <option value="popular">Popular</option>
+                  <option value="english">English</option>
+                  <option value="spanish">Spanish</option>
+                  <option value="french">French</option>
+                  <option value="indigenous">Indigenous</option>
+                </select>
+              </div>
+
+              {/* Population Filter */}
+              <div>
+                <label className="block text-sm font-semibold text-[#1A1A2E] mb-2">
+                  Population
+                </label>
+                <select
+                  multiple
+                  value={queryParams.population}
+                  onChange={(e) => {
+                    const values = Array.from(e.target.selectedOptions, option => option.value)
+                    handleFilterChange('population', values)
+                  }}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                >
+                  <option value="small">Small (&lt; 10K)</option>
+                  <option value="medium">Medium (10K - 100K)</option>
+                  <option value="large">Large (100K - 1M)</option>
+                  <option value="very-large">Very Large (&gt; 1M)</option>
                 </select>
               </div>
             </div>
+          </div>
+        </div>
 
-            {/* Active Filters */}
-            {(queryParams.region?.length || queryParams.language?.length || queryParams.query) && (
-              <div className="mt-4 flex flex-wrap gap-2">
-                {queryParams.query && (
-                  <span className="inline-flex items-center px-3 py-1 bg-primary-100 text-primary-800 text-sm rounded-full">
-                    Search: "{queryParams.query}"
-                  </span>
-                )}
-                {queryParams.region?.map(region => (
-                  <span key={region} className="inline-flex items-center px-3 py-1 bg-secondary-100 text-secondary-800 text-sm rounded-full">
-                    {region}
-                  </span>
-                ))}
-                <button
-                  onClick={clearFilters}
-                  className="text-sm text-gray-500 hover:text-gray-700 underline"
-                >
-                  Clear all filters
-                </button>
+        {/* Results Summary */}
+        <div className="mb-8">
+          <p className="text-[#4A4A4A]">
+            Showing {cultures.length} of {totalCount} cultures
+          </p>
+        </div>
+
+        {/* Cultures Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+          {cultures.map((culture, index) => (
+            <motion.div
+              key={culture.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 group overflow-hidden hover:border-orange-200"
+            >
+              <div className="relative h-48 overflow-hidden">
+                <div className="w-full h-full bg-gradient-to-br from-orange-100 to-purple-100 flex items-center justify-center">
+                  <Globe className="w-24 h-24 text-orange-500" />
+                </div>
+                <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300" />
               </div>
-            )}
-          </motion.div>
+              
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-[#4A4A4A] font-medium">{culture.region}</span>
+                  </div>
+                  {culture.population && (
+                    <div className="flex items-center space-x-1">
+                      <Users className="w-3 h-3 text-gray-400" />
+                      <span className="text-xs text-[#4A4A4A]">{culture.population.toLocaleString()}</span>
+                    </div>
+                  )}
+                </div>
+                
+                <h3 className="text-xl font-bold text-[#1A1A2E] mb-2 group-hover:text-orange-600 transition-colors duration-200">
+                  {culture.name}
+                </h3>
+                
+                <p className="text-[#4A4A4A] mb-4 leading-relaxed line-clamp-3">
+                  {culture.description}
+                </p>
+                
+                <div className="grid grid-cols-3 gap-4 mb-4 text-center">
+                  <div>
+                    <div className="text-lg font-bold text-orange-600">{culture.exhibitionsCount}</div>
+                    <div className="text-xs text-[#4A4A4A] font-medium">Exhibitions</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-blue-600">{culture.resourcesCount}</div>
+                    <div className="text-xs text-[#4A4A4A] font-medium">Resources</div>
+                  </div>
+                  <div>
+                    <div className="text-lg font-bold text-purple-600">{culture.storiesCount}</div>
+                    <div className="text-xs text-[#4A4A4A] font-medium">Stories</div>
+                  </div>
+                </div>
+                
+                {/* Language tags */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {culture.language.slice(0, 2).map((lang) => (
+                    <span
+                      key={lang}
+                      className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded-full font-medium"
+                    >
+                      {lang}
+                    </span>
+                  ))}
+                  {culture.language.length > 2 && (
+                    <span className="px-2 py-1 bg-gray-100 text-[#4A4A4A] text-xs rounded-full font-medium">
+                      +{culture.language.length - 2}
+                    </span>
+                  )}
+                </div>
+                
+                <Link
+                  href={`/explore/${culture.id}`}
+                  className="inline-flex items-center text-orange-600 hover:text-orange-700 font-bold group-hover:translate-x-1 transition-transform duration-200"
+                >
+                  Learn More
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Link>
+              </div>
+            </motion.div>
+          ))}
+        </div>
 
-          {/* Results */}
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              <SkeletonList count={12} />
-            </div>
-          ) : cultures.length === 0 ? (
-            <EmptyState
-              title="No cultures found"
-              description="Try adjusting your search criteria or filters to find more results."
-              icon={<Globe className="w-8 h-8 text-gray-400" />}
-              action={
-                <button onClick={clearFilters} className="btn-primary">
-                  Clear Filters
-                </button>
-              }
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex justify-center">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
             />
-          ) : (
-            <>
-              {/* Cultures Grid */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12"
-              >
-                {cultures.map((culture, index) => (
-                  <motion.div
-                    key={culture.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: index * 0.1 }}
-                    className="culture-card group"
-                  >
-                    <div className="relative h-48 overflow-hidden rounded-t-lg">
-                      <div className="w-full h-full bg-gradient-to-br from-primary-100 to-secondary-100 flex items-center justify-center">
-                        <BookOpen className="w-16 h-16 text-primary-400" />
-                      </div>
-                      <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300" />
-                    </div>
-                    
-                    <div className="p-6">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center space-x-2">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-gray-500">{culture.region}</span>
-                        </div>
-                        {culture.population && (
-                          <div className="flex items-center space-x-1">
-                            <Users className="w-3 h-3 text-gray-400" />
-                            <span className="text-xs text-gray-500">{formatNumber(culture.population)}</span>
-                          </div>
-                        )}
-                      </div>
-                      
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors duration-200">
-                        {culture.name}
-                      </h3>
-                      
-                      <p className="text-gray-600 mb-4 line-clamp-3">
-                        {culture.description}
-                      </p>
-                      
-                      <div className="grid grid-cols-3 gap-4 mb-4 text-center">
-                        <div>
-                          <div className="text-lg font-bold text-primary-600">{culture.exhibitionsCount}</div>
-                          <div className="text-xs text-gray-500">Exhibitions</div>
-                        </div>
-                        <div>
-                          <div className="text-lg font-bold text-secondary-600">{culture.resourcesCount}</div>
-                          <div className="text-xs text-gray-500">Resources</div>
-                        </div>
-                        <div>
-                          <div className="text-lg font-bold text-cultural-600">{culture.storiesCount}</div>
-                          <div className="text-xs text-gray-500">Stories</div>
-                        </div>
-                      </div>
-                      
-                      {/* Language tags */}
-                      <div className="flex flex-wrap gap-1 mb-4">
-                        {culture.language.slice(0, 2).map((lang) => (
-                          <span
-                            key={lang}
-                            className="px-2 py-1 bg-primary-50 text-primary-700 text-xs rounded-full"
-                          >
-                            {lang}
-                          </span>
-                        ))}
-                        {culture.language.length > 2 && (
-                          <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
-                            +{culture.language.length - 2}
-                          </span>
-                        )}
-                      </div>
-                      
-                      <Link
-                        href={`/explore/${culture.id}`}
-                        className="btn-primary-sm w-full"
-                      >
-                        Explore Culture
-                      </Link>
-                    </div>
-                  </motion.div>
-                ))}
-              </motion.div>
-
-              {/* Pagination */}
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={queryParams.page || 1}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                  className="mt-8"
-                />
-              )}
-            </>
-          )}
-        </ErrorBoundary>
+          </div>
+        )}
       </div>
     </div>
   )

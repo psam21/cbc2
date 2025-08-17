@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Plus, 
@@ -29,42 +29,6 @@ interface ExhibitionCuratorProps {
   onSave: (exhibition: Partial<Exhibition>) => void
 }
 
-// Mock content items that can be curated into exhibitions
-const mockContentItems = [
-  {
-    id: 'content1',
-    type: 'culture',
-    title: 'Traditional Aboriginal Dreamtime Stories',
-    description: 'Collection of traditional Dreamtime stories from various Aboriginal communities',
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z'
-  },
-  {
-    id: 'content2',
-    type: 'exhibition',
-    title: 'Māori Weaving Techniques',
-    description: 'Documentation of traditional Māori weaving methods and patterns',
-    createdAt: '2024-01-05T00:00:00Z',
-    updatedAt: '2024-01-05T00:00:00Z'
-  },
-  {
-    id: 'content3',
-    type: 'resource',
-    title: 'Pacific Island Dance Traditions',
-    description: 'Video documentation of traditional Pacific Island dance performances',
-    createdAt: '2024-01-10T00:00:00Z',
-    updatedAt: '2024-01-15T00:00:00Z'
-  },
-  {
-    id: 'content4',
-    type: 'story',
-    title: 'Indigenous Language Preservation',
-    description: 'Stories about efforts to preserve endangered indigenous languages',
-    createdAt: '2024-01-15T00:00:00Z',
-    updatedAt: '2024-01-15T00:00:00Z'
-  }
-]
-
 export default function ExhibitionCurator({ isOpen, onClose, onSave }: ExhibitionCuratorProps) {
   const { isAuthenticated, user } = useAuth()
   const [step, setStep] = useState<'details' | 'content' | 'preview'>('details')
@@ -84,8 +48,45 @@ export default function ExhibitionCurator({ isOpen, onClose, onSave }: Exhibitio
   
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedContent, setSelectedContent] = useState<any[]>([])
-  const [filteredContent, setFilteredContent] = useState<any[]>(mockContentItems)
-  const [loading, setLoading] = useState(false)
+  // State for content items that can be curated
+  const [contentItems, setContentItems] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch available content for curation
+  useEffect(() => {
+    const fetchContentItems = async () => {
+      try {
+        setLoading(true)
+        // TODO: Replace with actual Nostr query for available content
+        // For now, show empty state
+        // const items = await nostrService.getAvailableContent()
+        // setContentItems(items)
+        setContentItems([])
+      } catch (error) {
+        console.error('Failed to fetch content items:', error)
+        setError('Failed to load available content')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchContentItems()
+  }, [])
+
+  // Filter content based on search query
+  const filteredContent = useMemo(() => {
+    if (!searchQuery.trim()) return contentItems
+    
+    const query = searchQuery.toLowerCase()
+    const filtered = contentItems.filter(item =>
+      item.title.toLowerCase().includes(query) ||
+      item.description.toLowerCase().includes(query) ||
+      item.tags.some((tag: string) => tag.toLowerCase().includes(query))
+    )
+    
+    return filtered
+  }, [contentItems, searchQuery])
 
   useEffect(() => {
     if (isOpen) {
@@ -109,12 +110,12 @@ export default function ExhibitionCurator({ isOpen, onClose, onSave }: Exhibitio
   }, [isOpen])
 
   useEffect(() => {
-    const filtered = mockContentItems.filter(item => 
-      item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      item.type.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    setFilteredContent(filtered)
+    // const filtered = mockContentItems.filter(item => 
+    //   item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //   item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    //   item.type.toLowerCase().includes(searchQuery.toLowerCase())
+    // )
+    // setFilteredContent(filtered)
   }, [searchQuery])
 
   const handleAddContent = (content: any) => {
@@ -437,35 +438,48 @@ export default function ExhibitionCurator({ isOpen, onClose, onSave }: Exhibitio
                 <div>
                   <h4 className="font-medium text-gray-900 mb-4">Available Content</h4>
                   <div className="space-y-3 max-h-96 overflow-y-auto">
-                    {filteredContent.map((item) => (
-                      <div
-                        key={item.id}
-                        className="border rounded-lg p-4 hover:border-purple-300 transition-colors cursor-pointer"
-                        onClick={() => handleAddContent(item)}
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                            {item.type === 'culture' && <ImageIcon className="w-5 h-5 text-purple-600" />}
-                            {item.type === 'story' && <FileText className="w-5 h-5 text-purple-600" />}
-                            {item.type === 'resource' && <Video className="w-5 h-5 text-purple-600" />}
-                            {item.type === 'exhibition' && <ImageIcon className="w-5 h-5 text-purple-600" />}
-                          </div>
-                          <div className="flex-1">
-                            <h5 className="font-medium text-gray-900 mb-1">{item.title}</h5>
-                            <p className="text-sm text-gray-600 line-clamp-2">{item.description}</p>
-                            <div className="flex items-center gap-2 mt-2">
-                              <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
-                                {item.type}
-                              </span>
-                              <span className="text-xs text-gray-500">
-                                {new Date(item.createdAt).toLocaleDateString()}
-                              </span>
-                            </div>
-                          </div>
-                          <Plus className="w-5 h-5 text-purple-600" />
-                        </div>
+                    {loading && error ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <p>{error}</p>
+                        <p className="text-sm mt-2">Please try again later or check your connection.</p>
                       </div>
-                    ))}
+                    ) : filteredContent.length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <ImageIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                        <p>No content found matching your search.</p>
+                        <p className="text-sm mt-2">Try a different search term or check back later.</p>
+                      </div>
+                    ) : (
+                      filteredContent.map((item) => (
+                        <div
+                          key={item.id}
+                          className="border rounded-lg p-4 hover:border-purple-300 transition-colors cursor-pointer"
+                          onClick={() => handleAddContent(item)}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                              {item.type === 'culture' && <ImageIcon className="w-5 h-5 text-purple-600" />}
+                              {item.type === 'story' && <FileText className="w-5 h-5 text-purple-600" />}
+                              {item.type === 'resource' && <Video className="w-5 h-5 text-purple-600" />}
+                              {item.type === 'exhibition' && <ImageIcon className="w-5 h-5 text-purple-600" />}
+                            </div>
+                            <div className="flex-1">
+                              <h5 className="font-medium text-gray-900 mb-1">{item.title}</h5>
+                              <p className="text-sm text-gray-600 line-clamp-2">{item.description}</p>
+                              <div className="flex items-center gap-2 mt-2">
+                                <span className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">
+                                  {item.type}
+                                </span>
+                                <span className="text-xs text-gray-500">
+                                  {new Date(item.createdAt).toLocaleDateString()}
+                                </span>
+                              </div>
+                            </div>
+                            <Plus className="w-5 h-5 text-purple-600" />
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
 

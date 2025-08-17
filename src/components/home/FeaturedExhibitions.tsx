@@ -1,58 +1,26 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowRight, Calendar, MapPin, Users, Star } from 'lucide-react'
+import { ArrowRight, Calendar, MapPin, Users, Star, Loader2 } from 'lucide-react'
 
-// Mock data - in production this would come from Nostr NIP-51 lists
-const featuredExhibitions = [
-  {
-    id: '1',
-    title: 'Maori Carving Traditions',
-    culture: 'Maori',
-    category: 'craft' as const,
-    region: 'New Zealand',
-    description: 'Explore the ancient art of Maori wood carving, from traditional meeting houses to contemporary interpretations.',
-    imageUrl: '/api/placeholder/400/300',
-    startDate: '2024-01-15',
-    endDate: '2024-06-30',
-    location: 'Auckland Museum',
-    featured: true,
-    rating: 4.8,
-    reviewsCount: 127
-  },
-  {
-    id: '2',
-    title: 'Inuit Survival Wisdom',
-    culture: 'Inuit',
-    category: 'history' as const,
-    region: 'Arctic',
-    description: 'Discover traditional Inuit knowledge of hunting, navigation, and survival in the harsh Arctic environment.',
-    imageUrl: '/api/placeholder/400/300',
-    startDate: '2024-02-01',
-    endDate: '2024-08-31',
-    location: 'Canadian Museum of History',
-    featured: true,
-    rating: 4.9,
-    reviewsCount: 89
-  },
-  {
-    id: '3',
-    title: 'Aboriginal Dreamtime Stories',
-    culture: 'Aboriginal Australians',
-    category: 'storytelling' as const,
-    region: 'Australia',
-    description: 'Immerse yourself in the spiritual and cultural narratives that have been passed down for thousands of years.',
-    imageUrl: '/api/placeholder/400/300',
-    startDate: '2024-03-01',
-    endDate: '2024-09-30',
-    location: 'National Museum of Australia',
-    featured: true,
-    rating: 4.7,
-    reviewsCount: 156
-  }
-]
+// Real data structure for exhibitions
+interface Exhibition {
+  id: string
+  title: string
+  culture: string
+  category: ExhibitionCategory
+  region: string
+  description: string
+  imageUrl?: string
+  startDate: string
+  endDate: string
+  location: string
+  featured: boolean
+  rating: number
+  reviewsCount: number
+}
 
 type ExhibitionCategory = 'art' | 'history' | 'ceremony' | 'craft' | 'music' | 'dance' | 'storytelling'
 
@@ -67,12 +35,141 @@ const categoryColors: Record<ExhibitionCategory, string> = {
 }
 
 export function FeaturedExhibitions() {
+  const [exhibitions, setExhibitions] = useState<Exhibition[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Fetch featured exhibitions
+  useEffect(() => {
+    const fetchFeaturedExhibitions = async () => {
+      try {
+        setLoading(true)
+        // TODO: Replace with actual Nostr query for featured exhibitions
+        // For now, show empty state
+        // const featured = await nostrService.getFeaturedExhibitions({ limit: 3 })
+        // setExhibitions(featured)
+        setExhibitions([])
+      } catch (error) {
+        console.error('Failed to fetch featured exhibitions:', error)
+        setError('Failed to load featured exhibitions')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchFeaturedExhibitions()
+  }, [])
+
+  if (loading) {
+    return (
+      <section className="bg-gradient-to-br from-[#f8faff] to-[#fffdf8] py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-24"
+          >
+            <h2 className="text-5xl md:text-6xl font-extrabold text-[#1A1A2E] mb-8 leading-tight tracking-tight">
+              Featured Exhibitions
+            </h2>
+            <p className="text-xl md:text-2xl text-[#4A4A4A] max-w-4xl mx-auto leading-relaxed font-light">
+              Experience immersive cultural exhibitions that bring traditions to life through 
+              artifacts, stories, and interactive experiences.
+            </p>
+          </motion.div>
+          
+          <div className="flex justify-center">
+            <div className="flex items-center gap-3 text-[#4A4A4A]">
+              <Loader2 className="w-6 h-6 animate-spin" />
+              <span>Loading featured exhibitions...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (error) {
+    return (
+      <section className="bg-gradient-to-br from-[#f8faff] to-[#fffdf8] py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-24"
+          >
+            <h2 className="text-5xl md:text-6xl font-extrabold text-[#1A1A2E] mb-8 leading-tight tracking-tight">
+              Featured Exhibitions
+            </h2>
+            <p className="text-xl md:text-2xl text-[#4A4A4A] max-w-4xl mx-auto leading-relaxed font-light">
+              Experience immersive cultural exhibitions that bring traditions to life through 
+              artifacts, stories, and interactive experiences.
+            </p>
+          </motion.div>
+          
+          <div className="text-center">
+            <div className="bg-white rounded-2xl p-8 border border-gray-100">
+              <p className="text-[#4A4A4A] mb-4">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  if (exhibitions.length === 0) {
+    return (
+      <section className="bg-gradient-to-br from-[#f8faff] to-[#fffdf8] py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-24"
+          >
+            <h2 className="text-5xl md:text-6xl font-extrabold text-[#1A1A2E] mb-8 leading-tight tracking-tight">
+              Featured Exhibitions
+            </h2>
+            <p className="text-xl md:text-2xl text-[#4A4A4A] max-w-4xl mx-auto leading-relaxed font-light">
+              Experience immersive cultural exhibitions that bring traditions to life through 
+              artifacts, stories, and interactive experiences.
+            </p>
+          </motion.div>
+          
+          <div className="text-center">
+            <div className="bg-white rounded-2xl p-8 border border-gray-100">
+              <p className="text-[#4A4A4A] mb-4">No featured exhibitions available yet.</p>
+              <p className="text-[#4A4A4A] mb-6">Be the first to create a cultural exhibition!</p>
+              <Link
+                href="/exhibitions"
+                className="inline-flex items-center justify-center px-8 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-colors"
+              >
+                Browse All Exhibitions
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="bg-gradient-to-br from-[#f8faff] to-[#fffdf8] py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="text-center mb-24"
@@ -87,11 +184,11 @@ export function FeaturedExhibitions() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 mb-24">
-          {featuredExhibitions.map((exhibition, index) => (
+          {exhibitions.map((exhibition, index) => (
             <motion.div
               key={exhibition.id}
               initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              animate={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group overflow-hidden hover:border-orange-200"
@@ -157,7 +254,7 @@ export function FeaturedExhibitions() {
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          animate={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.4 }}
           className="text-center"
