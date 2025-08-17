@@ -39,10 +39,10 @@ export class NostrAdapters {
             createdAt: new Date(event.created_at * 1000).toISOString(),
             updatedAt: new Date(event.created_at * 1000).toISOString(),
             author: event.pubkey,
-            exhibitionsCount: 0, // Will be populated by separate query
-            resourcesCount: 0,   // Will be populated by separate query
-            storiesCount: 0      // Will be populated by separate query
-          }
+            exhibitionsCount: 0,
+            resourcesCount: 0,
+            storiesCount: 0
+          } as Culture
         } catch (error) {
           console.error('Failed to parse culture event:', error, event)
           return null
@@ -72,7 +72,7 @@ export class NostrAdapters {
             region: tags.get('region')?.[0] || content.region || 'Unknown',
             imageUrl: tags.get('image')?.[0] || content.image,
             heroImage: tags.get('hero')?.[0] || content.heroImage || content.image,
-            artifacts: [], // Will be populated by separate query
+            artifacts: [],
             startDate: content.startDate || content.start_date,
             endDate: content.endDate || content.end_date,
             location: content.location || tags.get('location')?.[0],
@@ -81,7 +81,7 @@ export class NostrAdapters {
             updatedAt: new Date(event.created_at * 1000).toISOString(),
             author: event.pubkey,
             featured: tags.get('featured')?.[0] === 'true' || content.featured === true
-          }
+          } as Exhibition
         } catch (error) {
           console.error('Failed to parse exhibition event:', error, event)
           return null
@@ -117,9 +117,9 @@ export class NostrAdapters {
             createdAt: new Date(event.created_at * 1000).toISOString(),
             updatedAt: new Date(event.created_at * 1000).toISOString(),
             author: event.pubkey,
-            downloads: 0, // Will be populated by separate query
+            downloads: 0,
             featured: tags.get('featured')?.[0] === 'true' || content.featured === true
-          }
+          } as Resource
         } catch (error) {
           console.error('Failed to parse resource event:', error, event)
           return null
@@ -154,10 +154,10 @@ export class NostrAdapters {
             tags: Array.from(tags.keys()).filter(key => !['title', 'culture', 'storyteller', 'audio', 'image', 'category'].includes(key)),
             createdAt: new Date(event.created_at * 1000).toISOString(),
             author: event.pubkey,
-            rating: 0, // Will be populated by separate query
-            ratingsCount: 0, // Will be populated by separate query
+            rating: 0,
+            ratingsCount: 0,
             featured: tags.get('featured')?.[0] === 'true' || content.featured === true
-          }
+          } as ElderStory
         } catch (error) {
           console.error('Failed to parse elder story event:', error, event)
           return null
@@ -193,7 +193,7 @@ export class NostrAdapters {
               checksum: tags.get('checksum')?.[0] || content.checksum || ''
             },
             tags: Array.from(tags.keys()).filter(key => !['name', 'type', 'url', 'thumbnail', 'checksum'].includes(key))
-          }
+          } as Artifact
         } catch (error) {
           console.error('Failed to parse artifact event:', error, event)
           return null
