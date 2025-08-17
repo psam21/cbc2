@@ -125,11 +125,11 @@ class NostrClient {
     
     // Clean up old cache entries (older than 5 minutes)
     const fiveMinutesAgo = Date.now() - 5 * 60 * 1000
-    for (const [id, entry] of this.eventCache.entries()) {
+    Array.from(this.eventCache.entries()).forEach(([id, entry]) => {
       if (entry.timestamp < fiveMinutesAgo) {
         this.eventCache.delete(id)
       }
-    }
+    })
   }
 
   private notifyEventListeners(event: NostrEvent) {
