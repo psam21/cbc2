@@ -3,6 +3,13 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { nostrService } from '@/lib/nostr/service'
 
+interface RelayConnection {
+  url: string
+  status: 'connecting' | 'connected' | 'failed' | 'disconnected'
+  lastSeen: number
+  latency: number
+}
+
 interface NostrContextType {
   isEnabled: boolean
   isConnected: boolean
@@ -10,7 +17,7 @@ interface NostrContextType {
   connectionStatus: {
     connected: number
     total: number
-    relays: any[]
+    relays: RelayConnection[]
   }
   connect: () => Promise<void>
   disconnect: () => void
@@ -35,7 +42,11 @@ export function NostrProvider({ children }: NostrProviderProps) {
   const [isEnabled, setIsEnabled] = useState(false)
   const [isConnected, setIsConnected] = useState(false)
   const [isInitialized, setIsInitialized] = useState(false)
-  const [connectionStatus, setConnectionStatus] = useState({
+  const [connectionStatus, setConnectionStatus] = useState<{
+    connected: number
+    total: number
+    relays: RelayConnection[]
+  }>({
     connected: 0,
     total: 0,
     relays: []
