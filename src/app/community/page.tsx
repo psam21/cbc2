@@ -14,7 +14,10 @@ import {
   Filter,
   UserPlus,
   Sparkles,
-  Clock
+  Clock,
+  Vote,
+  Video,
+  Settings
 } from 'lucide-react'
 import { User, CommunityEvent } from '@/types/content'
 import { useAuth } from '@/components/auth/AuthProvider'
@@ -24,6 +27,10 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
 import { useQueryParamState } from '@/hooks/useQueryParamState'
 import { useDebounce } from '@/hooks/useDebounce'
 import { formatDate, formatTimeAgo } from '@/lib/utils'
+import ConnectionRequest from '@/components/community/ConnectionRequest'
+import ConnectionRequests from '@/components/community/ConnectionRequests'
+import CommunityGovernance from '@/components/community/CommunityGovernance'
+import LiveSessions from '@/components/community/LiveSessions'
 
 // Mock community members
 const mockMembers: User[] = [
@@ -82,7 +89,7 @@ const mockEvents: CommunityEvent[] = [
   }
 ]
 
-const MemberCard = ({ member, onFollow }: { member: User; onFollow: (id: string) => void }) => (
+const MemberCard = ({ member, onFollow, onConnect }: { member: User; onFollow: (id: string) => void; onConnect: (member: User) => void }) => (
   <motion.div
     whileHover={{ y: -2 }}
     className="bg-white rounded-lg border p-6 hover:shadow-lg transition-all duration-200"
@@ -114,13 +121,22 @@ const MemberCard = ({ member, onFollow }: { member: User; onFollow: (id: string)
             )}
           </div>
           
-          <button
-            onClick={() => onFollow(member.id)}
-            className="flex items-center gap-1 px-3 py-1 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            <UserPlus className="w-3 h-3" />
-            Follow
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => onFollow(member.id)}
+              className="flex items-center gap-1 px-3 py-1 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <UserPlus className="w-3 h-3" />
+              Follow
+            </button>
+            <button
+              onClick={() => onConnect(member)}
+              className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              <MessageCircle className="w-3 h-3" />
+              Connect
+            </button>
+          </div>
         </div>
         
         {member.bio && (
@@ -207,6 +223,13 @@ export default function CommunityPage() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('members')
   
+  // Modal states for Section 4 flows
+  const [showConnectionRequest, setShowConnectionRequest] = useState(false)
+  const [showConnectionRequests, setShowConnectionRequests] = useState(false)
+  const [showGovernance, setShowGovernance] = useState(false)
+  const [showLiveSessions, setShowLiveSessions] = useState(false)
+  const [selectedMember, setSelectedMember] = useState<User | null>(null)
+  
   const { queryParams, setQueryParam } = useQueryParamState({ q: '', expertise: '' })
   const searchQuery = queryParams.q
   const expertiseFilter = queryParams.expertise
@@ -244,6 +267,22 @@ export default function CommunityPage() {
     }
   }
 
+  const handleConnect = (member: User) => {
+    setSelectedMember(member)
+    setShowConnectionRequest(true)
+  }
+
+  const handleSendConnectionRequest = async (memberId: string, message: string, mentorshipInterest: boolean) => {
+    try {
+      // In production, this would send a Nostr event for the connection request
+      console.log('Sending connection request:', { memberId, message, mentorshipInterest })
+      // Show success message or redirect to connection requests
+      setShowConnectionRequests(true)
+    } catch (error) {
+      console.error('Failed to send connection request:', error)
+    }
+  }
+
   const filteredMembers = members.filter(member => {
     if (debouncedSearch) {
       const query = debouncedSearch.toLowerCase()
@@ -267,7 +306,9 @@ export default function CommunityPage() {
 
   const tabs = [
     { id: 'members', label: 'Community Members', icon: Users, count: members.length },
-    { id: 'events', label: 'Upcoming Events', icon: Calendar, count: events.length }
+    { id: 'events', label: 'Upcoming Events', icon: Calendar, count: events.length },
+    { id: 'governance', label: 'Governance', icon: Vote, count: 0 },
+    { id: 'sessions', label: 'Live Sessions', icon: Video, count: 0 }
   ]
 
   return (
@@ -282,6 +323,33 @@ export default function CommunityPage() {
             Connect with cultural practitioners, elders, and enthusiasts from around the world. 
             Share knowledge, learn from others, and build lasting relationships.
           </p>
+          
+          {/* Section 4 Flow Actions */}
+          {isAuthenticated && (
+            <div className="flex items-center justify-center gap-4 mt-6">
+              <button
+                onClick={() => setShowConnectionRequests(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                <MessageCircle className="w-4 h-4" />
+                Connection Requests
+              </button>
+              <button
+                onClick={() => setShowGovernance(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <Vote className="w-4 h-4" />
+                Community Governance
+              </button>
+              <button
+                onClick={() => setShowLiveSessions(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+              >
+                <Video className="w-4 h-4" />
+                Live Sessions
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Stats */}
@@ -372,6 +440,7 @@ export default function CommunityPage() {
                         key={member.id} 
                         member={member} 
                         onFollow={handleFollow}
+                        onConnect={handleConnect}
                       />
                     ))}
                   </div>
@@ -408,6 +477,42 @@ export default function CommunityPage() {
                 )}
               </div>
             )}
+
+            {activeTab === 'governance' && (
+              <div className="text-center py-12">
+                <Vote className="w-16 h-16 text-purple-600 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Community Governance
+                </h3>
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  Participate in platform decisions and shape the future of cultural preservation through community voting.
+                </p>
+                <button
+                  onClick={() => setShowGovernance(true)}
+                  className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  View Governance Proposals
+                </button>
+              </div>
+            )}
+
+            {activeTab === 'sessions' && (
+              <div className="text-center py-12">
+                <Video className="w-16 h-16 text-blue-600 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                  Live Cultural Exchange Sessions
+                </h3>
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  Join live workshops, language lessons, and cultural demonstrations from practitioners around the world.
+                </p>
+                <button
+                  onClick={() => setShowLiveSessions(true)}
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Browse Live Sessions
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -426,6 +531,39 @@ export default function CommunityPage() {
               Sign In to Join
             </button>
           </div>
+        )}
+
+        {/* Section 4 Flow Modals */}
+        {showConnectionRequest && selectedMember && (
+          <ConnectionRequest
+            member={selectedMember}
+            onClose={() => {
+              setShowConnectionRequest(false)
+              setSelectedMember(null)
+            }}
+            onSendRequest={handleSendConnectionRequest}
+          />
+        )}
+
+        {showConnectionRequests && (
+          <ConnectionRequests
+            isOpen={showConnectionRequests}
+            onClose={() => setShowConnectionRequests(false)}
+          />
+        )}
+
+        {showGovernance && (
+          <CommunityGovernance
+            isOpen={showGovernance}
+            onClose={() => setShowGovernance(false)}
+          />
+        )}
+
+        {showLiveSessions && (
+          <LiveSessions
+            isOpen={showLiveSessions}
+            onClose={() => setShowLiveSessions(false)}
+          />
         )}
       </div>
     </div>
