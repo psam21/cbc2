@@ -298,9 +298,9 @@ class NostrClient {
   }
 
   public async disconnect() {
-    for (const [relayUrl, ws] of this.websockets) {
+    Array.from(this.websockets.entries()).forEach(([relayUrl, ws]) => {
       ws.close()
-    }
+    })
     this.websockets.clear()
     this.relays.clear()
     this.isInitialized = false
