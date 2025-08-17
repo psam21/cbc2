@@ -35,15 +35,16 @@ Purpose: A structured backlog- End-to-end user flows implemented per page: list 
 | **E8** | Home Metrics & Featured Blocks | ✅ **DONE** | P0 | 51,68,12,01 | 2025-01-17 |
 | **E12** | Curation Lists | ✅ **DONE** | P0 | 51,01 | 2025-01-17 |
 | **E11** | Sensitivity & Protected Content | 🔄 **IN PROGRESS** | P1 | 36,70,65,01 | - |
-| **E6** | Resources/Downloads Integration | 🔄 **NEXT** | P1 | 33,68,94,12,01 | - |
-| **E7** | Elder Voices Integration | 🔄 **NEXT** | P1 | 23,94,68,25,12,01 | - |
-| **E17** | Reactions & Highlights | 🔄 **NEXT** | P1 | 25,84,01 | - |
+| **E6** | Resources/Downloads Integration | ✅ **DONE** | P1 | 33,68,94,12,01 | 2025-01-17 |
+| **E7** | Elder Voices Integration | ✅ **DONE** | P1 | 23,94,68,25,12,01 | 2025-01-17 |
+| **E17** | Reactions & Highlights | ✅ **DONE** | P1 | 25,84,01 | 2025-01-17 |
 
 ### Current Deployment Status
-- **Live URL:** https://cbc2-4lms5fwq3-sps-projects-12e5f312.vercel.app
-- **Build Status:** ✅ Passing
+- **Live URL:** https://cbc2-j0yegn4t8-sps-projects-12e5f312.vercel.app
+- **Build Status:** ✅ Passing  
 - **Nostr Integration:** ✅ Active (2/3 relays connected)
-- **Last Deploy:** 2025-01-17 06:14 UTC
+- **Last Deploy:** 2025-01-17 07:40 UTC
+- **Bundle Sizes:** Home 6.74kB | Explore 3.91kB | Downloads 5.57kB | Elder Voices 6.12kB
 
 ## Notes
 
@@ -66,7 +67,7 @@ Purpose: A structured backlog- End-to-end user flows implemented per page: list 
 - ✅ **Iteration 1 (Phase 1)**: Foundation infrastructure – Flow foundation + Data backbone + Media + Labels + Content sensitivity (E0, E1, E2, E3, E11)
 - ✅ **Iteration 2 (Phase 1)**: Home + Navigation – Landing page metrics, featured content, curation lists, and navigation flows (E8, E12)
 - ✅ **Iteration 3 (Phase 2)**: Core discovery – Explore cultures (primary user journey from home) (E5)
-- 🔄 **Iteration 4 (Phase 2)**: Supporting content – Resources/Downloads + Elder Voices + Reactions (E6, E7, E17)
+- ✅ **Iteration 4 (Phase 2)**: Supporting content – Resources/Downloads + Elder Voices + Reactions (E6, E7, E17)
 - ⏳ **Iteration 5 (Phase 2)**: User system – Identity/Authentication for contribution flows (E10)
 - ⏳ **Iteration 6 (Phase 3)**: Content creation – Contribute flows (users understand what to contribute after exploring) (E16)
 - ⏳ **Iteration 7 (Phase 3)**: Community foundations – User profiles, messaging, moderation, events (E13, E20, E26, E14)
@@ -133,10 +134,10 @@ This table provides a complete mapping of how website pages relate to developmen
 | **Explore** (`/explore`) | 3 | E5 | S0-S2 | 33,68,94,12,01,19 | Culture discovery, facets, aggregation |
 | **Explore Detail** (`/explore/[id]`) | 3 | E5 | S2 | 33,68,94,12,01,19 | Culture detail with related content |
 | | | | | | |
-| **Resources** (`/downloads`) | 4 | E6 | S0-S2 | 33,68,94,12,01 | Resources list, filters, downloads |
-| **Resource Detail** (`/downloads/[id]`) | 4 | E6 | S2 | 33,68,94,12,01 | Resource detail and media preview |
-| **Elder Voices** (`/elder-voices`) | 4 | E7 | S0-S2 | 23,94,68,25,12,01 | Stories, audio playback, ratings |
-| **Elder Voices** (`/elder-voices`) | 4 | E17 | S1 | 25,84,01 | Reactions and star ratings system |
+| **Resources** (`/downloads`) | 4 | E6 | S0-S2 | 33,68,94,12,01 | ✅ Resources list, filters, downloads |
+| **Resource Detail** (`/downloads/[id]`) | 4 | E6 | S2 | 33,68,94,12,01 | ⏳ Resource detail and media preview |
+| **Elder Voices** (`/elder-voices`) | 4 | E7 | S0-S2 | 23,94,68,25,12,01 | ✅ Stories, audio playback, ratings |
+| **Elder Voices** (`/elder-voices`) | 4 | E17 | S1 | 25,84,01 | ✅ Reactions and star ratings system |
 | | | | | | |
 | **Auth/Identity** (Cross-cutting) | 5 | E10 | S1-S4 | 05,26,46,98,01,19 | Authentication, profiles, delegation |
 | | | | | | |
