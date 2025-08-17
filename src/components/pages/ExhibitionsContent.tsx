@@ -404,9 +404,12 @@ export function ExhibitionsContent() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
           <div className="md:col-span-2">
             <SearchInput
-              value={searchQuery}
-              onChange={setSearchQuery}
-              placeholder="Search exhibitions by title, culture, or theme..."
+              placeholder="Search exhibitions by title, theme, or location..."
+              onSearch={(query, filters) => {
+                setSearchQuery(query)
+                // Handle filters if needed
+              }}
+              className="w-full"
             />
           </div>
           

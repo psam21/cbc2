@@ -486,10 +486,12 @@ export function ElderVoicesContent() {
                   Search Stories
                 </label>
                 <SearchInput
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  placeholder="Search stories..."
-                  isLoading={loading}
+                  placeholder="Search stories by elder name, theme, or region..."
+                  onSearch={(query, filters) => {
+                    setSearchTerm(query)
+                    // Handle filters if needed
+                  }}
+                  className="w-full"
                 />
               </div>
 

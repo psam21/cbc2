@@ -368,10 +368,12 @@ export function DownloadsContent() {
                   Search Resources
                 </label>
                 <SearchInput
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  placeholder="Search resources..."
-                  isLoading={loading}
+                  placeholder="Search resources by title, description, or tags..."
+                  onSearch={(query, filters) => {
+                    setSearchTerm(query)
+                    // Handle filters if needed
+                  }}
+                  className="w-full"
                 />
               </div>
 

@@ -261,10 +261,12 @@ export default function ExploreContent() {
                   Search Cultures
                 </label>
                 <SearchInput
-                  value={searchTerm}
-                  onChange={setSearchTerm}
-                  placeholder="Search by name, description, or region..."
-                  isLoading={loading}
+                  placeholder="Search cultures, regions, languages..."
+                  onSearch={(query, filters) => {
+                    setSearchTerm(query)
+                    // Handle filters if needed
+                  }}
+                  className="w-full"
                 />
               </div>
 

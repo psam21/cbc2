@@ -415,9 +415,12 @@ export default function ExhibitionCurator({ isOpen, onClose, onSave }: Exhibitio
               <div className="flex gap-4 mb-6">
                 <div className="flex-1">
                   <SearchInput
-                    value={searchQuery}
-                    onChange={setSearchQuery}
-                    placeholder="Search available content..."
+                    placeholder="Search artifacts by name, description, or tags..."
+                    onSearch={(query, filters) => {
+                      setSearchQuery(query)
+                      // Handle filters if needed
+                    }}
+                    className="w-full"
                   />
                 </div>
                 <select className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">

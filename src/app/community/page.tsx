@@ -411,9 +411,11 @@ export default function CommunityPage() {
                 <div className="flex items-center gap-4 mb-6">
                   <div className="flex-1">
                     <SearchInput
-                      value={searchQuery}
-                      onChange={setSearchQuery}
                       placeholder="Search members by name, skills, or interests..."
+                      onSearch={(query, filters) => {
+                        setSearchQuery(query)
+                        // Handle filters if needed
+                      }}
                     />
                   </div>
                   <select
