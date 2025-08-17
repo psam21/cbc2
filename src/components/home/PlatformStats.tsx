@@ -13,6 +13,7 @@ interface PlatformStat {
   icon: React.ComponentType<any>
   description: string
   color: string
+  growth: number
 }
 
 // Fallback stats when Nostr is not available
@@ -23,7 +24,8 @@ const fallbackStats: PlatformStat[] = [
     value: '150+',
     icon: Globe,
     description: 'Indigenous and traditional communities',
-    color: 'from-primary-500 to-primary-600'
+    color: 'from-primary-500 to-primary-600',
+    growth: 12
   },
   {
     id: 2,
@@ -31,7 +33,8 @@ const fallbackStats: PlatformStat[] = [
     value: '80+',
     icon: BookOpen,
     description: 'Preserved and documented',
-    color: 'from-secondary-500 to-secondary-600'
+    color: 'from-secondary-500 to-secondary-600',
+    growth: 8
   },
   {
     id: 3,
@@ -39,7 +42,8 @@ const fallbackStats: PlatformStat[] = [
     value: '2,500+',
     icon: Heart,
     description: 'Elder voices and narratives',
-    color: 'from-cultural-500 to-cultural-600'
+    color: 'from-cultural-500 to-cultural-600',
+    growth: 25
   },
   {
     id: 4,
@@ -47,7 +51,8 @@ const fallbackStats: PlatformStat[] = [
     value: '500+',
     icon: Users,
     description: 'Active community members',
-    color: 'from-earth-500 to-earth-600'
+    color: 'from-earth-500 to-earth-600',
+    growth: 18
   }
 ]
 
@@ -94,7 +99,8 @@ export function PlatformStats() {
           value: formatNumber(cultures.pagination.total),
           icon: Globe,
           description: 'Indigenous and traditional communities',
-          color: 'from-primary-500 to-primary-600'
+          color: 'from-primary-500 to-primary-600',
+          growth: 12
         },
         {
           id: 2,
@@ -102,7 +108,8 @@ export function PlatformStats() {
           value: formatNumber(uniqueLanguages),
           icon: BookOpen,
           description: 'Preserved and documented',
-          color: 'from-secondary-500 to-secondary-600'
+          color: 'from-secondary-500 to-secondary-600',
+          growth: 8
         },
         {
           id: 3,
@@ -110,7 +117,8 @@ export function PlatformStats() {
           value: formatNumber(stories.pagination.total),
           icon: Heart,
           description: 'Elder voices and narratives',
-          color: 'from-cultural-500 to-cultural-600'
+          color: 'from-cultural-500 to-cultural-600',
+          growth: 25
         },
         {
           id: 4,
@@ -118,7 +126,8 @@ export function PlatformStats() {
           value: formatNumber(uniqueContributors),
           icon: Users,
           description: 'Active community members',
-          color: 'from-earth-500 to-earth-600'
+          color: 'from-earth-500 to-earth-600',
+          growth: 18
         }
       ]
 
@@ -132,7 +141,7 @@ export function PlatformStats() {
   }
 
   return (
-    <section className="bg-gradient-to-br from-[#f8faff] to-[#fffdf8] py-24">
+    <section className="bg-gradient-to-br from-earth-50 to-nature-50 py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -141,58 +150,47 @@ export function PlatformStats() {
           transition={{ duration: 0.6 }}
           className="text-center mb-24"
         >
-          <h2 className="text-5xl md:text-6xl font-extrabold text-[#1A1A2E] mb-8 leading-tight tracking-tight">
+          <h2 className="text-5xl md:text-6xl font-display font-extrabold text-earth-800 mb-8 leading-tight tracking-tight">
             Platform Impact
           </h2>
-          <p className="text-xl md:text-2xl text-[#4A4A4A] max-w-4xl mx-auto leading-relaxed font-light">
-            Our community has made significant progress in preserving cultural heritage 
-            through collaborative efforts and shared knowledge.
+          <p className="text-xl md:text-2xl text-earth-600 max-w-4xl mx-auto leading-relaxed font-light">
+            See how CultureBridge is making a difference in cultural preservation worldwide
           </p>
-          {isEnabled && isInitialized && (
-            <div className="mt-8 inline-flex items-center text-sm text-green-600 bg-green-50 px-6 py-3 rounded-full border border-green-200">
-              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse" />
-              {loading ? 'Calculating live metrics...' : 'Live metrics from Nostr network'}
-            </div>
-          )}
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16">
           {stats.map((stat, index) => (
             <motion.div
-              key={stat.id}
+              key={stat.name}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               className="text-center group"
             >
-              <div className={`w-28 h-28 bg-white rounded-2xl shadow-lg flex items-center justify-center mx-auto mb-8 group-hover:shadow-xl transition-all duration-300 border border-gray-100`}>
-                <stat.icon className={`w-14 h-14 text-${stat.color.split('-')[1]}-600`} />
+              <div className="w-28 h-28 bg-white rounded-2xl shadow-lg flex items-center justify-center mx-auto mb-6 group-hover:shadow-xl transition-all duration-300 border border-earth-100 group-hover:border-nature-200">
+                <stat.icon className="w-14 h-14 text-nature-600" />
+              </div>
+              <div className="text-6xl font-display font-extrabold text-earth-800 mb-4 group-hover:text-nature-700 transition-colors duration-300">
+                {stat.value}
+              </div>
+              <div className="text-2xl font-heading font-bold text-earth-700 mb-2">
+                {stat.name}
+              </div>
+              <div className="text-earth-600 text-lg">
+                {stat.description}
               </div>
               
-              <div className="mb-6">
-                <span className="text-6xl font-extrabold text-[#1A1A2E]">{stat.value}</span>
+              {/* Growth indicator */}
+              <div className="mt-4 flex items-center justify-center space-x-1">
+                <TrendingUp className="w-4 h-4 text-nature-600" />
+                <span className="text-sm text-nature-600 font-medium">
+                  +{stat.growth}% this month
+                </span>
               </div>
-              
-              <h3 className="text-2xl font-bold text-[#1A1A2E] mb-4">{stat.name}</h3>
-              <p className="text-[#4A4A4A] leading-relaxed text-lg">{stat.description}</p>
             </motion.div>
           ))}
         </div>
-
-        {/* Growth Indicator */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-24 text-center"
-        >
-          <div className="inline-flex items-center space-x-4 bg-white text-green-700 px-8 py-4 rounded-full border border-green-200 shadow-lg">
-            <TrendingUp className="w-6 h-6" />
-            <span className="font-bold text-lg">Growing daily with new contributions</span>
-          </div>
-        </motion.div>
       </div>
     </section>
   )

@@ -1,12 +1,22 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Plus_Jakarta_Sans, Noto_Sans } from 'next/font/google'
 import './globals.css'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { NostrProvider } from '@/components/providers/NostrProvider'
 import { AuthProvider } from '@/components/auth/AuthProvider'
 
-const inter = Inter({ subsets: ['latin'] })
+const plusJakartaSans = Plus_Jakarta_Sans({ 
+  subsets: ['latin'],
+  variable: '--font-plus-jakarta-sans',
+  display: 'swap',
+})
+
+const notoSans = Noto_Sans({ 
+  subsets: ['latin'],
+  variable: '--font-noto-sans',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: 'Culture Bridge - Preserving Cultural Heritage Through Technology',
@@ -28,7 +38,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={`${plusJakartaSans.variable} ${notoSans.variable} font-body`}>
         <NostrProvider>
           <AuthProvider>
             <div className="min-h-screen flex flex-col">

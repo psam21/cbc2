@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Globe, Users, BookOpen, Download, Calendar, Heart, Search, User, LogIn } from 'lucide-react'
+import { Menu, X, Globe, Users, BookOpen, Download, Calendar, Heart, Search, User, LogIn, ChevronDown, Settings, LogOut } from 'lucide-react'
 import { useNostr } from '@/components/providers/NostrProvider'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { LoginModal } from '@/components/auth/LoginModal'
@@ -37,160 +37,147 @@ export default function Header() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const pathname = usePathname()
   const { isEnabled, isConnected, connect } = useNostr()
-  const { isAuthenticated, user } = useAuth()
+  const { isAuthenticated, user, logout } = useAuth()
 
   const handleDropdownToggle = (navName: string) => {
     setActiveDropdown(activeDropdown === navName ? null : navName)
   }
 
+  const handleSignOut = () => {
+    logout()
+    setMobileMenuOpen(false)
+  }
+
   return (
-    <header className="bg-white shadow-xl border-b border-gray-100 sticky top-0 z-50">
-      <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
-        <div className="flex lg:flex-1">
-          <Link href="/" className="-m-1.5 p-1.5">
-            <span className="sr-only">Culture Bridge</span>
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
-                <Globe className="w-7 h-7 text-white" />
-              </div>
-              <span className="text-2xl font-extrabold text-[#1A1A2E]">Culture Bridge</span>
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-earth-100 shadow-xl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <Link href="/" className="flex items-center space-x-3 group">
+            <div className="w-12 h-12 bg-gradient-to-br from-earth-500 to-earth-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300">
+              <Globe className="w-7 h-7 text-white" />
             </div>
+            <span className="font-display font-extrabold text-2xl text-earth-800 group-hover:text-earth-700 transition-colors">
+              CultureBridge
+            </span>
           </Link>
-        </div>
-        
-        <div className="flex lg:hidden">
-          <button
-            type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-xl p-2.5 text-gray-700 hover:bg-gray-100 transition-colors"
-            onClick={() => setMobileMenuOpen(true)}
-          >
-            <span className="sr-only">Open main menu</span>
-            <Menu className="h-6 w-6" aria-hidden="true" />
-          </button>
-        </div>
-        
-        <div className="hidden lg:flex lg:gap-x-8">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href || 
-              (item.hasDropdown && (exploreDropdown.some(d => d.href === pathname) || communityDropdown.some(d => d.href === pathname)))
-            return (
+
+          {/* Navigation */}
+          <nav className="hidden md:flex items-center space-x-1">
+            {navigation.map((item) => (
               <div key={item.name} className="relative">
-                <button
-                  onClick={() => item.hasDropdown ? handleDropdownToggle(item.name) : null}
-                  className={`text-sm font-semibold leading-6 transition-all duration-300 px-4 py-3 rounded-xl relative group flex items-center gap-2 ${
-                    isActive
-                      ? 'text-orange-600 bg-orange-50'
-                      : 'text-[#4A4A4A] hover:text-[#1A1A2E] hover:bg-gray-50'
-                  }`}
+                <Link
+                  href={item.href}
+                  className="px-4 py-3 rounded-xl relative group text-earth-600 hover:text-earth-800 hover:bg-earth-50 transition-all duration-200 font-medium"
                 >
-                  {item.name}
-                  {item.hasDropdown && (
-                    <svg className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === item.name ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  )}
-                  {/* Underline animation on hover */}
-                  <span className={`absolute bottom-0 left-0 w-0 h-0.5 bg-orange-600 transition-all duration-300 group-hover:w-full ${
-                    isActive ? 'w-full' : ''
-                  }`}></span>
-                </button>
+                  <div className="flex items-center space-x-2">
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.name}</span>
+                    {item.hasDropdown && (
+                      <ChevronDown className="w-3 h-3 transition-transform duration-200 group-hover:rotate-180" />
+                    )}
+                  </div>
+                  {/* Underline animation */}
+                  <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-nature-500 transition-all duration-300 group-hover:w-full"></div>
+                </Link>
                 
-                {/* Dropdown Menu */}
-                {item.hasDropdown && activeDropdown === item.name && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
-                    {item.name === 'Explore' ? exploreDropdown.map((dropdownItem) => (
-                      <Link
-                        key={dropdownItem.name}
-                        href={dropdownItem.href}
-                        className="flex items-center gap-3 px-4 py-3 text-[#4A4A4A] hover:text-[#1A1A2E] hover:bg-orange-50 transition-colors"
-                      >
-                        <dropdownItem.icon className="w-4 h-4" />
-                        {dropdownItem.name}
-                      </Link>
-                    )) : communityDropdown.map((dropdownItem) => (
-                      <Link
-                        key={dropdownItem.name}
-                        href={dropdownItem.href}
-                        className="flex items-center gap-3 px-4 py-3 text-[#4A4A4A] hover:text-[#1A1A2E] hover:bg-orange-50 transition-colors"
-                      >
-                        <dropdownItem.icon className="w-4 h-4" />
-                        {dropdownItem.name}
-                      </Link>
-                    ))}
+                {/* Dropdown menus */}
+                {item.hasDropdown && (
+                  <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-xl shadow-xl border border-earth-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                    {item.name === 'Explore' && (
+                      <div className="py-2">
+                        {exploreDropdown.map((subItem) => (
+                          <Link
+                            key={subItem.name}
+                            href={subItem.href}
+                            className="flex items-center space-x-3 px-4 py-3 text-earth-600 hover:text-earth-800 hover:bg-earth-50 transition-colors"
+                          >
+                            <subItem.icon className="w-4 h-4" />
+                            <span>{subItem.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                    {item.name === 'Community' && (
+                      <div className="py-2">
+                        {communityDropdown.map((subItem) => (
+                          <Link
+                            key={subItem.name}
+                            href={subItem.href}
+                            className="flex items-center space-x-3 px-4 py-3 text-earth-600 hover:text-earth-800 hover:bg-earth-50 transition-colors"
+                          >
+                            <subItem.icon className="w-4 h-4" />
+                            <span>{subItem.name}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            )
-          })}
-          
-          {/* Start Here Option */}
-          <Link
-            href="/start-here"
-            className="text-sm font-semibold leading-6 transition-all duration-300 px-4 py-3 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800"
-          >
-            Start Here
-          </Link>
-        </div>
-        
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
-          <div className="relative">
-            <SearchInput 
-              placeholder="Search cultures, stories..."
-              onSearch={(query: string, filters: Record<string, string[]>) => {
-                console.log('Search:', query, filters)
-                // Handle search with filters
-              }}
-              className="w-80"
-            />
-          </div>
-          
-          {/* Auth Section */}
+            ))}
+            
+            {/* Start Here Link */}
+            <Link
+              href="/explore"
+              className="px-4 py-2 text-nature-600 hover:text-nature-700 font-medium transition-colors"
+            >
+              Start Here
+            </Link>
+          </nav>
+
+          {/* Right side */}
           <div className="flex items-center space-x-4">
+            {/* Search */}
+            <div className="hidden lg:block">
+              <SearchInput
+                placeholder="Search cultures, stories..."
+                onSearch={(query, filters) => {
+                  // Handle search
+                  console.log('Search:', query, filters)
+                }}
+                className="w-72"
+              />
+            </div>
+
+            {/* Nostr Connection Status */}
             {isEnabled && (
-              <div className="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200">
-                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-                <span className="text-sm text-[#4A4A4A] font-medium">
-                  {isConnected ? 'Nostr Connected' : 'Nostr Disconnected'}
-                </span>
-                {!isConnected && (
-                  <button
-                    onClick={connect}
-                    className="text-sm text-orange-600 hover:text-orange-700 font-medium ml-2"
-                  >
-                    Connect
-                  </button>
-                )}
+              <div className="hidden sm:flex items-center space-x-2 px-3 py-2 bg-nature-50 text-nature-700 rounded-lg text-sm font-medium">
+                <div className="w-2 h-2 bg-nature-500 rounded-full animate-pulse"></div>
+                <span>Connected</span>
               </div>
             )}
 
+            {/* User Actions */}
             {isAuthenticated ? (
-              <>
+              <div className="flex items-center space-x-3">
+                {/* Share Your Heritage Button */}
                 <Link
                   href="/contribute"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-orange-600 text-white text-sm font-bold rounded-xl hover:bg-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  className="hidden sm:inline-flex items-center space-x-2 px-4 py-2 bg-accent-600 text-white rounded-xl hover:bg-accent-700 transition-colors font-medium"
                 >
-                  Share Your Heritage
+                  <Heart className="w-4 h-4" />
+                  <span>Share Your Heritage</span>
                 </Link>
                 
+                {/* User Profile */}
                 <div className="relative">
                   <button
                     onClick={() => setUserProfileOpen(!userProfileOpen)}
-                    className="flex items-center gap-3 p-2 text-[#4A4A4A] hover:text-[#1A1A2E] transition-colors hover:bg-gray-100 rounded-xl"
+                    className="flex items-center space-x-2 p-2 rounded-xl hover:bg-earth-50 transition-colors"
                   >
                     {user?.picture ? (
                       <img 
                         src={user.picture} 
                         alt={user.displayName || 'User'}
-                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
+                        className="w-8 h-8 rounded-full object-cover border-2 border-earth-200"
                       />
                     ) : (
-                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center border-2 border-gray-200">
-                        <User className="w-5 h-5 text-purple-600" />
+                      <div className="w-8 h-8 bg-gradient-to-br from-earth-100 to-earth-200 rounded-full flex items-center justify-center border-2 border-earth-200">
+                        <User className="w-4 h-4 text-earth-600" />
                       </div>
                     )}
-                    <span className="hidden md:block text-sm font-bold">
-                      {user?.displayName || 'Profile'}
-                    </span>
+                    <ChevronDown className="w-4 h-4 text-earth-600" />
                   </button>
                   
                   {userProfileOpen && (
@@ -200,96 +187,104 @@ export default function Header() {
                     />
                   )}
                 </div>
-              </>
+              </div>
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3">
                 <Link
-                  href="/explore"
-                  className="text-sm text-[#4A4A4A] hover:text-orange-600 transition-colors font-medium"
+                  href="/auth/signin"
+                  className="px-6 py-2 bg-earth-700 text-white rounded-xl hover:bg-earth-800 transition-colors font-medium"
                 >
-                  Browse Cultures
+                  Sign In
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="text-sm text-[#4A4A4A] hover:text-orange-600 transition-colors font-medium"
+                  className="px-6 py-2 border border-earth-700 text-earth-700 rounded-xl hover:bg-earth-700 hover:text-white transition-colors font-medium"
                 >
                   Sign Up
                 </Link>
+              </div>
+            )}
+
+            {/* Mobile menu button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2 rounded-lg text-earth-600 hover:text-earth-800 hover:bg-earth-50 transition-colors"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-earth-100">
+          <div className="px-4 py-4 space-y-3">
+            {/* Mobile Search */}
+            <SearchInput
+              placeholder="Search cultures, stories..."
+              onSearch={(query, filters) => {
+                // Handle search
+                console.log('Search:', query, filters)
+              }}
+              className="w-full"
+            />
+            
+            {/* Mobile Navigation */}
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                className="block px-4 py-3 text-earth-600 hover:text-earth-800 hover:bg-earth-50 rounded-xl transition-colors font-medium"
+              >
+                <div className="flex items-center space-x-3">
+                  <item.icon className="w-5 h-5" />
+                  <span>{item.name}</span>
+                </div>
+              </Link>
+            ))}
+            
+            {/* Mobile User Actions */}
+            {isAuthenticated ? (
+              <div className="space-y-3 pt-4 border-t border-earth-100">
+                <Link
+                  href="/contribute"
+                  className="flex items-center space-x-3 px-4 py-3 bg-accent-600 text-white rounded-xl font-medium"
+                >
+                  <Heart className="w-4 h-4" />
+                  <span>Share Your Heritage</span>
+                </Link>
+                <Link
+                  href="/profile"
+                  className="flex items-center space-x-3 px-4 py-3 text-earth-600 hover:text-earth-800 hover:bg-earth-50 rounded-xl transition-colors"
+                >
+                  <User className="w-4 h-4" />
+                  <span>Profile</span>
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="w-full flex items-center space-x-3 px-4 py-3 text-earth-600 hover:text-earth-800 hover:bg-earth-50 rounded-xl transition-colors"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3 pt-4 border-t border-earth-100">
                 <Link
                   href="/auth/signin"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#1A1A2E] text-white rounded-xl hover:bg-[#2A2A3E] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm font-bold"
+                  className="block w-full text-center px-6 py-3 bg-earth-700 text-white rounded-xl hover:bg-earth-800 transition-colors font-medium"
                 >
-                  <LogIn className="w-4 h-4" />
                   Sign In
+                </Link>
+                <Link
+                  href="/auth/signup"
+                  className="block w-full text-center px-6 py-3 border border-earth-700 text-earth-700 rounded-xl hover:bg-earth-700 hover:text-white transition-colors font-medium"
+                >
+                  Sign Up
                 </Link>
               </div>
             )}
-          </div>
-        </div>
-      </nav>
-      
-      {/* Login Modal */}
-      <LoginModal 
-        isOpen={loginModalOpen} 
-        onClose={() => setLoginModalOpen(false)} 
-      />
-      
-      {/* Mobile menu */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden">
-          <div className="fixed inset-0 z-50" />
-          <div className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-            <div className="flex items-center justify-between">
-              <Link href="/" className="-m-1.5 p-1.5">
-                <span className="sr-only">Culture Bridge</span>
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-cultural-600 rounded-lg flex items-center justify-center">
-                    <Globe className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-xl font-bold text-gray-900">Culture Bridge</span>
-                </div>
-              </Link>
-              <button
-                type="button"
-                className="-m-2.5 rounded-md p-2.5 text-gray-700"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <span className="sr-only">Close menu</span>
-                <X className="h-6 w-6" aria-hidden="true" />
-              </button>
-            </div>
-            <div className="mt-6 flow-root">
-              <div className="-my-6 divide-y divide-gray-500/10">
-                <div className="space-y-2 py-6">
-                  {navigation.map((item) => {
-                    const isActive = pathname === item.href
-                    return (
-                      <Link
-                        key={item.name}
-                        href={item.href}
-                        className={`-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 transition-colors duration-200 ${
-                          isActive
-                            ? 'bg-primary-50 text-primary-600'
-                            : 'text-gray-900 hover:bg-gray-50'
-                        }`}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {item.name}
-                      </Link>
-                    )
-                  })}
-                </div>
-                <div className="py-6">
-                  <Link
-                    href="/contribute"
-                    className="btn-primary w-full text-center"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Share Your Heritage
-                  </Link>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       )}

@@ -108,10 +108,10 @@ export function FeaturedCultures() {
           transition={{ duration: 0.6 }}
           className="text-center mb-24"
         >
-          <h2 className="text-5xl md:text-6xl font-extrabold text-[#1A1A2E] mb-8 leading-tight tracking-tight">
+          <h2 className="text-5xl md:text-6xl font-display font-extrabold text-earth-800 mb-8 leading-tight tracking-tight">
             Featured Cultures
           </h2>
-          <p className="text-xl md:text-2xl text-[#4A4A4A] max-w-4xl mx-auto leading-relaxed font-light">
+          <p className="text-xl md:text-2xl text-earth-600 max-w-4xl mx-auto leading-relaxed font-light">
             Discover diverse cultural traditions and stories from around the world
           </p>
         </motion.div>
@@ -124,7 +124,7 @@ export function FeaturedCultures() {
           </div>
         ) : error ? (
           <div className="text-center py-12">
-            <p className="text-gray-600 mb-4">{error}</p>
+            <p className="text-earth-600 mb-4">{error}</p>
             <LoadingSpinner />
           </div>
         ) : (
@@ -136,32 +136,32 @@ export function FeaturedCultures() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group overflow-hidden hover:border-orange-200 cursor-pointer"
+                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-earth-100 group overflow-hidden hover:border-nature-200 cursor-pointer"
               >
                 {/* Image with 3:2 aspect ratio */}
                 <div className="relative h-48 overflow-hidden">
-                  <div className="w-full h-full bg-gradient-to-br from-orange-100 to-purple-100 flex items-center justify-center">
-                    <BookOpen className="w-24 h-24 text-orange-500" />
+                  <div className="w-full h-full bg-gradient-to-br from-earth-100 to-nature-100 flex items-center justify-center">
+                    <BookOpen className="w-24 h-24 text-earth-500" />
                   </div>
                   <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300" />
                   
                   {/* Story Count Badge */}
-                  <div className="absolute top-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-[#1A1A2E] shadow-lg">
+                  <div className="absolute top-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-earth-800 shadow-lg">
                     {culture.storiesCount} stories
                   </div>
                   
                   {/* Region Badge */}
-                  <div className="absolute top-4 left-4 bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+                  <div className="absolute top-4 left-4 bg-nature-600 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
                     {culture.region}
                   </div>
                 </div>
                 
                 <div className="p-8">
                   {/* Culture Name + Hook */}
-                  <h3 className="text-2xl font-bold text-[#1A1A2E] mb-2 group-hover:text-orange-600 transition-colors duration-200">
+                  <h3 className="text-2xl font-heading font-bold text-earth-800 mb-2 group-hover:text-nature-600 transition-colors duration-200">
                     {culture.name}
                   </h3>
-                  <p className="text-[#4A4A4A] mb-4 leading-relaxed line-clamp-2 font-medium">
+                  <p className="text-earth-600 mb-4 leading-relaxed line-clamp-2 font-medium">
                     {culture.description}
                   </p>
                   
@@ -170,13 +170,13 @@ export function FeaturedCultures() {
                     {culture.language.slice(0, 2).map((lang) => (
                       <span
                         key={lang}
-                        className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full font-medium border border-blue-200"
+                        className="px-3 py-1 bg-nature-50 text-nature-700 text-sm rounded-full font-medium border border-nature-200"
                       >
                         {lang}
                       </span>
                     ))}
                     {culture.language.length > 2 && (
-                      <span className="px-3 py-1 bg-gray-100 text-[#4A4A4A] text-sm rounded-full font-medium">
+                      <span className="px-3 py-1 bg-earth-100 text-earth-600 text-sm rounded-full font-medium">
                         +{culture.language.length - 2} more
                       </span>
                     )}
@@ -184,17 +184,17 @@ export function FeaturedCultures() {
                   
                   {/* Stats Grid */}
                   <div className="grid grid-cols-3 gap-4 mb-6 text-center">
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-xl font-bold text-orange-600">{culture.exhibitionsCount}</div>
-                      <div className="text-xs text-[#4A4A4A] font-medium">Exhibitions</div>
+                    <div className="bg-earth-50 rounded-lg p-3">
+                      <div className="text-xl font-bold text-nature-600">{culture.exhibitionsCount}</div>
+                      <div className="text-xs text-earth-600 font-medium">Exhibitions</div>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-xl font-bold text-blue-600">{culture.resourcesCount}</div>
-                      <div className="text-xs text-[#4A4A4A] font-medium">Resources</div>
+                    <div className="bg-earth-50 rounded-lg p-3">
+                      <div className="text-xl font-bold text-accent-600">{culture.resourcesCount}</div>
+                      <div className="text-xs text-earth-600 font-medium">Resources</div>
                     </div>
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <div className="text-xl font-bold text-purple-600">{culture.storiesCount}</div>
-                      <div className="text-xs text-[#4A4A4A] font-medium">Stories</div>
+                    <div className="bg-earth-50 rounded-lg p-3">
+                      <div className="text-xl font-bold text-earth-600">{culture.storiesCount}</div>
+                      <div className="text-xs text-earth-600 font-medium">Stories</div>
                     </div>
                   </div>
                   
@@ -202,13 +202,13 @@ export function FeaturedCultures() {
                   <div className="flex items-center justify-between">
                     <Link
                       href={`/explore/${culture.id}`}
-                      className="inline-flex items-center text-orange-600 hover:text-orange-700 font-bold group-hover:translate-x-1 transition-transform duration-200"
+                      className="inline-flex items-center text-nature-600 hover:text-nature-700 font-bold group-hover:translate-x-1 transition-transform duration-200"
                     >
                       Learn More
                       <ArrowRight className="ml-2 w-4 h-4" />
                     </Link>
                     
-                    <div className="text-sm text-[#4A4A4A]">
+                    <div className="text-sm text-earth-600">
                       {culture.population && (
                         <span className="flex items-center gap-1">
                           <Users className="w-3 h-3" />
@@ -232,7 +232,7 @@ export function FeaturedCultures() {
         >
           <Link
             href="/explore"
-            className="inline-flex items-center justify-center px-12 py-6 border-2 border-[#1A1A2E] text-[#1A1A2E] text-xl font-bold rounded-xl hover:bg-[#1A1A2E] hover:text-white transition-all duration-300 transform hover:scale-105"
+            className="inline-flex items-center justify-center px-12 py-6 border-2 border-earth-700 text-earth-700 text-xl font-bold rounded-xl hover:bg-earth-700 hover:text-white transition-all duration-300 transform hover:scale-105"
           >
             Explore All Cultures
             <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-200" />
