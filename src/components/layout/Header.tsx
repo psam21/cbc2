@@ -29,16 +29,16 @@ export default function Header() {
   const { isAuthenticated, user } = useAuth()
 
   return (
-    <header className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
+    <header className="bg-white shadow-xl border-b border-gray-100 sticky top-0 z-50">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Culture Bridge</span>
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Globe className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+                <Globe className="w-7 h-7 text-white" />
               </div>
-              <span className="text-2xl font-bold text-gray-900">Culture Bridge</span>
+              <span className="text-2xl font-extrabold text-[#1A1A2E]">Culture Bridge</span>
             </div>
           </Link>
         </div>
@@ -61,13 +61,17 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`text-sm font-semibold leading-6 transition-all duration-200 px-3 py-2 rounded-lg ${
+                className={`text-sm font-semibold leading-6 transition-all duration-300 px-4 py-3 rounded-xl relative group ${
                   isActive
                     ? 'text-orange-600 bg-orange-50'
-                    : 'text-gray-700 hover:text-orange-600 hover:bg-orange-50'
+                    : 'text-[#4A4A4A] hover:text-[#1A1A2E] hover:bg-gray-50'
                 }`}
               >
                 {item.name}
+                {/* Underline animation on hover */}
+                <span className={`absolute bottom-0 left-0 w-0 h-0.5 bg-orange-600 transition-all duration-300 group-hover:w-full ${
+                  isActive ? 'w-full' : ''
+                }`}></span>
               </Link>
             )
           })}
@@ -79,16 +83,16 @@ export default function Header() {
             <input
               type="text"
               placeholder="Search cultures, stories..."
-              className="pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent w-72 bg-gray-50 hover:bg-white transition-colors"
+              className="pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent w-72 bg-gray-50 hover:bg-white transition-colors shadow-sm"
             />
           </div>
           
           {/* Auth Section */}
           <div className="flex items-center space-x-4">
             {isEnabled && (
-              <div className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-lg">
+              <div className="flex items-center space-x-2 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200">
                 <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-                <span className="text-sm text-gray-600 font-medium">
+                <span className="text-sm text-[#4A4A4A] font-medium">
                   {isConnected ? 'Nostr Connected' : 'Nostr Disconnected'}
                 </span>
                 {!isConnected && (
@@ -106,7 +110,7 @@ export default function Header() {
               <>
                 <Link
                   href="/contribute"
-                  className="inline-flex items-center justify-center px-6 py-3 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-orange-600 text-white text-sm font-bold rounded-xl hover:bg-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   Share Your Heritage
                 </Link>
@@ -114,7 +118,7 @@ export default function Header() {
                 <div className="relative">
                   <button
                     onClick={() => setUserProfileOpen(!userProfileOpen)}
-                    className="flex items-center gap-3 p-2 text-gray-700 hover:text-gray-900 transition-colors hover:bg-gray-100 rounded-lg"
+                    className="flex items-center gap-3 p-2 text-[#4A4A4A] hover:text-[#1A1A2E] transition-colors hover:bg-gray-100 rounded-xl"
                   >
                     {user?.picture ? (
                       <img 
@@ -127,7 +131,7 @@ export default function Header() {
                         <User className="w-5 h-5 text-purple-600" />
                       </div>
                     )}
-                    <span className="hidden md:block text-sm font-semibold">
+                    <span className="hidden md:block text-sm font-bold">
                       {user?.displayName || 'Profile'}
                     </span>
                   </button>
@@ -144,19 +148,19 @@ export default function Header() {
               <div className="flex items-center space-x-4">
                 <Link
                   href="/explore"
-                  className="text-sm text-gray-700 hover:text-orange-600 transition-colors font-medium"
+                  className="text-sm text-[#4A4A4A] hover:text-orange-600 transition-colors font-medium"
                 >
                   Browse Cultures
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="text-sm text-gray-700 hover:text-orange-600 transition-colors font-medium"
+                  className="text-sm text-[#4A4A4A] hover:text-orange-600 transition-colors font-medium"
                 >
                   Sign Up
                 </Link>
                 <Link
                   href="/auth/signin"
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm font-semibold"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-[#1A1A2E] text-white rounded-xl hover:bg-[#2A2A3E] transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm font-bold"
                 >
                   <LogIn className="w-4 h-4" />
                   Sign In

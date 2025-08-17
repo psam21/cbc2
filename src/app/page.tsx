@@ -24,6 +24,13 @@ export default function HomePage() {
       
       {/* Call to Action */}
       <CallToAction />
+      
+      {/* Enhanced Scroll Animations */}
+      <div className="fixed bottom-8 right-8 z-40">
+        <div className="w-16 h-16 bg-orange-600 rounded-full shadow-2xl flex items-center justify-center cursor-pointer hover:scale-110 transition-transform duration-300 animate-float">
+          <ArrowRight className="w-6 h-6 text-white transform rotate-90" />
+        </div>
+      </div>
     </div>
   )
 }
