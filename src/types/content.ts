@@ -163,7 +163,7 @@ export interface SearchFilters {
     start: string
     end: string
   }
-  sortBy?: 'relevance' | 'newest' | 'oldest' | 'popular' | 'name'
+  sortBy?: 'relevance' | 'newest' | 'oldest' | 'popular' | 'rating' | 'name'
   page?: number
   limit?: number
 }
