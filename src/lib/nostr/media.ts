@@ -254,11 +254,11 @@ class MediaResolver {
    */
   clearExpiredCache(): void {
     const now = Date.now()
-    for (const [key, entry] of this.cache.entries()) {
+    Array.from(this.cache.entries()).forEach(([key, entry]) => {
       if (now - entry.timestamp > this.CACHE_TTL) {
         this.cache.delete(key)
       }
-    }
+    })
   }
 
   /**
