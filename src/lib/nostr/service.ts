@@ -111,13 +111,13 @@ export class NostrService {
     await this.ensureInitialized()
     
     try {
-      // Search for cultures published in the last year (31536000 seconds)
-      const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000
+      // Search for cultures published in the last 5 years (157680000 seconds)
+      const fiveYearsAgo = Math.floor(Date.now() / 1000) - 157680000
       
       const queryOptions: NostrQueryOptions = {
         kinds: [30001], // NIP-33 kind 30001
         limit: filters.limit || 20,
-        since: oneYearAgo // Search back 1 year
+        since: fiveYearsAgo // Search back 5 years
       }
 
       // Add tag filters
@@ -165,13 +165,13 @@ export class NostrService {
     await this.ensureInitialized()
     
     try {
-      // Search for exhibitions published in the last year (31536000 seconds)
-      const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000
+      // Search for exhibitions published in the last 5 years (157680000 seconds)
+      const fiveYearsAgo = Math.floor(Date.now() / 1000) - 157680000
       
       const queryOptions: NostrQueryOptions = {
         kinds: [30002], // NIP-33 kind 30002
         limit: filters.limit || 20,
-        since: oneYearAgo // Search back 1 year
+        since: fiveYearsAgo // Search back 5 years
       }
 
       // Add tag filters
@@ -217,13 +217,13 @@ export class NostrService {
     await this.ensureInitialized()
     
     try {
-      // Search for resources published in the last year (31536000 seconds)
-      const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000
+      // Search for resources published in the last 5 years (157680000 seconds)
+      const fiveYearsAgo = Math.floor(Date.now() / 1000) - 157680000
       
       const queryOptions: NostrQueryOptions = {
         kinds: [30003], // NIP-33 kind 30003
         limit: filters.limit || 20,
-        since: oneYearAgo // Search back 1 year
+        since: fiveYearsAgo // Search back 5 years
       }
 
       // Add tag filters
@@ -264,13 +264,13 @@ export class NostrService {
     await this.ensureInitialized()
     
     try {
-      // Search for elder stories published in the last year (31536000 seconds)
-      const oneYearAgo = Math.floor(Date.now() / 1000) - 31536000
+      // Search for elder stories published in the last 5 years (157680000 seconds)
+      const fiveYearsAgo = Math.floor(Date.now() / 1000) - 157680000
       
       const queryOptions: NostrQueryOptions = {
         kinds: [30004], // NIP-33 kind 30004
         limit: filters.limit || 20,
-        since: oneYearAgo // Search back 1 year
+        since: fiveYearsAgo // Search back 5 years
       }
 
       // Add tag filters
