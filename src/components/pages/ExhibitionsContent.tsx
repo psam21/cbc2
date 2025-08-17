@@ -16,7 +16,8 @@ import {
   Star,
   BookOpen,
   Image as ImageIcon,
-  Play
+  Play,
+  Plus
 } from 'lucide-react'
 import { Exhibition, SearchFilters } from '@/types/content'
 import { useNostr } from '@/components/providers/NostrProvider'
@@ -27,6 +28,8 @@ import { LoadingSpinner, SkeletonList } from '@/components/ui/LoadingSpinner'
 import { EmptyState } from '@/components/ui/ErrorBoundary'
 import { Pagination } from '@/components/ui/Pagination'
 import { formatDate, formatTimeAgo } from '@/lib/utils'
+import { useAuth } from '@/components/auth/AuthProvider'
+import ExhibitionCurator from '@/components/exhibitions/ExhibitionCurator'
 
 // Enhanced mock exhibitions data for E4 implementation
 const mockExhibitions: Exhibition[] = [
@@ -253,6 +256,8 @@ export function ExhibitionsContent() {
   const [loading, setLoading] = useState(true)
   const [totalResults, setTotalResults] = useState(0)
   const { isEnabled } = useNostr()
+  const { isAuthenticated } = useAuth()
+  const [showCurator, setShowCurator] = useState(false)
 
   // URL state management
   const { queryParams, setQueryParam } = useQueryParamState({
@@ -347,6 +352,26 @@ export function ExhibitionsContent() {
     setPage('1')
   }
 
+  const handleSaveExhibition = async (exhibition: Partial<Exhibition>) => {
+    try {
+      // In production, this would publish to Nostr
+      console.log('Saving exhibition:', exhibition)
+      // Add to local state for demo
+      const newExhibition = {
+        ...exhibition,
+        id: `new-${Date.now()}`,
+        imageUrl: '/api/placeholder/400/300',
+        heroImage: '/api/placeholder/800/500',
+        featured: false
+      } as Exhibition
+      
+      setExhibitions(prev => [newExhibition, ...prev])
+      setTotalResults(prev => prev + 1)
+    } catch (error) {
+      console.error('Failed to save exhibition:', error)
+    }
+  }
+
   const hasActiveFilters = searchQuery || category || region || sortBy !== 'newest'
 
   return (
@@ -359,6 +384,19 @@ export function ExhibitionsContent() {
         <p className="text-xl text-gray-600 max-w-3xl mx-auto">
           Explore curated collections of cultural artifacts, stories, and traditions from around the world.
         </p>
+        
+        {/* Curate Exhibition Button */}
+        {isAuthenticated && (
+          <div className="mt-6">
+            <button
+              onClick={() => setShowCurator(true)}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+              Curate Exhibition
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Filters */}
@@ -456,6 +494,15 @@ export function ExhibitionsContent() {
             onPageChange={(newPage) => setPage(newPage.toString())}
           />
         </div>
+      )}
+
+      {/* Exhibition Curator Modal */}
+      {showCurator && (
+        <ExhibitionCurator
+          isOpen={showCurator}
+          onClose={() => setShowCurator(false)}
+          onSave={handleSaveExhibition}
+        />
       )}
     </div>
   )
