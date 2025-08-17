@@ -1,11 +1,31 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { ArrowRight, Globe, Heart, BookOpen } from 'lucide-react'
+import { ArrowRight, Globe, Heart, BookOpen, Search, Users, MapPin } from 'lucide-react'
 import { motion } from 'framer-motion'
 
+// Mock proof data - in production this would come from Nostr
+const proofStats = [
+  { count: '2,137', label: 'stories preserved', detail: 'across 64 communities' },
+  { count: '89', label: 'languages documented', detail: 'from endangered to thriving' },
+  { count: '1,024', label: 'contributors', detail: 'elders, scholars, community members' }
+]
+
+const searchExamples = ['Yoruba weaving', 'Ladakh lullabies', 'Maori carving', 'Inuit survival', 'Aboriginal dreamtime']
+
 export function HomeHero() {
+  const [currentStat, setCurrentStat] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  // Rotate through proof stats
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentStat((prev) => (prev + 1) % proofStats.length)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
+
   return (
     <section className="relative overflow-hidden">
       {/* Subtle Gradient Background */}
@@ -37,27 +57,72 @@ export function HomeHero() {
         </svg>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-8 py-24 relative z-10">
         <div className="text-center max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h1 className="text-5xl md:text-7xl font-extrabold text-[#1A1A2E] mb-10 leading-tight tracking-tight">
-              <span className="block">Preserving Cultural Heritage</span>
-              <span className="block text-orange-600">Through Technology</span>
+            {/* Emotional Headline */}
+            <h1 className="text-5xl md:text-7xl font-extrabold text-[#1A1A2E] mb-8 leading-tight tracking-tight">
+              <span className="block">Preserve living cultures</span>
+              <span className="block text-orange-600">with the people who hold them</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-[#4A4A4A] mb-16 max-w-4xl mx-auto leading-relaxed font-light">
-              Discover, explore, and contribute to the preservation of diverse cultures from around the world. 
-              Connect with communities, access resources, and learn about traditions that shape our humanity.
-            </p>
+            {/* Proof Element - Rotating Stats */}
+            <motion.div
+              key={currentStat}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-12"
+            >
+              <div className="inline-flex items-center gap-3 bg-white rounded-2xl px-6 py-4 shadow-lg border border-gray-100">
+                <Users className="w-6 h-6 text-orange-600" />
+                <div className="text-left">
+                  <span className="text-2xl font-bold text-[#1A1A2E]">{proofStats[currentStat].count}</span>
+                  <span className="text-lg text-[#4A4A4A] ml-2">{proofStats[currentStat].label}</span>
+                  <div className="text-sm text-[#4A4A4A]">{proofStats[currentStat].detail}</div>
+                </div>
+              </div>
+            </motion.div>
             
-            <div className="flex flex-col sm:flex-row gap-8 justify-center items-center mb-24">
+            {/* Enhanced Search */}
+            <div className="mb-12">
+              <div className="relative max-w-2xl mx-auto">
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search cultures, stories, traditions..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-4 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent bg-white shadow-lg"
+                />
+                <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-orange-600 text-white px-6 py-2 rounded-xl hover:bg-orange-700 transition-colors">
+                  Search
+                </button>
+              </div>
+              {/* Search Examples */}
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <span className="text-sm text-[#4A4A4A]">Try:</span>
+                {searchExamples.map((example, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setSearchQuery(example)}
+                    className="text-sm text-orange-600 hover:text-orange-700 px-3 py-1 rounded-full bg-orange-50 hover:bg-orange-100 transition-colors"
+                  >
+                    {example}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Single Primary CTA + Secondary */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
               <Link 
                 href="/explore" 
-                className="inline-flex items-center justify-center px-12 py-6 bg-orange-600 text-white text-xl font-bold rounded-xl hover:bg-orange-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl min-w-[280px]"
+                className="inline-flex items-center justify-center px-12 py-6 bg-orange-600 text-white text-xl font-bold rounded-xl hover:bg-orange-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl min-w-[280px]"
               >
                 Explore Cultures
                 <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-200" />
@@ -65,9 +130,9 @@ export function HomeHero() {
               
               <Link 
                 href="/contribute" 
-                className="inline-flex items-center justify-center px-12 py-6 border-2 border-[#1A1A2E] text-[#1A1A2E] text-xl font-bold rounded-xl hover:bg-[#1A1A2E] hover:text-white transition-all duration-300 transform hover:scale-105 min-w-[280px]"
+                className="inline-flex items-center justify-center px-12 py-6 border-2 border-[#1A1A2E] text-[#1A1A2E] text-xl font-semibold rounded-xl hover:bg-[#1A1A2E] hover:text-white transition-all duration-300 transform hover:scale-105 min-w-[280px]"
               >
-                Share Your Heritage
+                Share Your Story
               </Link>
             </div>
           </motion.div>

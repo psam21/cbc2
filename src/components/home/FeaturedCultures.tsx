@@ -136,76 +136,87 @@ export function FeaturedCultures() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group overflow-hidden hover:border-orange-200"
+                className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group overflow-hidden hover:border-orange-200 cursor-pointer"
               >
-                <div className="relative h-64 overflow-hidden">
+                {/* Image with 3:2 aspect ratio */}
+                <div className="relative h-48 overflow-hidden">
                   <div className="w-full h-full bg-gradient-to-br from-orange-100 to-purple-100 flex items-center justify-center">
                     <BookOpen className="w-24 h-24 text-orange-500" />
                   </div>
                   <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300" />
+                  
+                  {/* Story Count Badge */}
+                  <div className="absolute top-4 right-4 bg-white bg-opacity-90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-bold text-[#1A1A2E] shadow-lg">
+                    {culture.storiesCount} stories
+                  </div>
+                  
+                  {/* Region Badge */}
+                  <div className="absolute top-4 left-4 bg-orange-600 text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg">
+                    {culture.region}
+                  </div>
                 </div>
                 
                 <div className="p-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-2">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-[#4A4A4A] font-medium">{culture.region}</span>
-                    </div>
-                    {culture.population && (
-                      <div className="flex items-center space-x-1">
-                        <Users className="w-3 h-3 text-gray-400" />
-                        <span className="text-xs text-[#4A4A4A]">{formatNumber(culture.population)}</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <h3 className="text-2xl font-bold text-[#1A1A2E] mb-3 group-hover:text-orange-600 transition-colors duration-200">
+                  {/* Culture Name + Hook */}
+                  <h3 className="text-2xl font-bold text-[#1A1A2E] mb-2 group-hover:text-orange-600 transition-colors duration-200">
                     {culture.name}
                   </h3>
-                  
-                  <p className="text-[#4A4A4A] mb-6 leading-relaxed line-clamp-3">
+                  <p className="text-[#4A4A4A] mb-4 leading-relaxed line-clamp-2 font-medium">
                     {culture.description}
                   </p>
                   
-                  <div className="grid grid-cols-3 gap-6 mb-8 text-center">
-                    <div>
-                      <div className="text-xl font-bold text-orange-600">{culture.exhibitionsCount}</div>
-                      <div className="text-sm text-[#4A4A4A] font-medium">Exhibitions</div>
-                    </div>
-                    <div>
-                      <div className="text-xl font-bold text-blue-600">{culture.resourcesCount}</div>
-                      <div className="text-sm text-[#4A4A4A] font-medium">Resources</div>
-                    </div>
-                    <div>
-                      <div className="text-xl font-bold text-purple-600">{culture.storiesCount}</div>
-                      <div className="text-sm text-[#4A4A4A] font-medium">Stories</div>
-                    </div>
-                  </div>
-                  
-                  {/* Language tags */}
+                  {/* Language Badges */}
                   <div className="flex flex-wrap gap-2 mb-6">
                     {culture.language.slice(0, 2).map((lang) => (
                       <span
                         key={lang}
-                        className="px-3 py-1 bg-orange-50 text-orange-700 text-sm rounded-full font-medium"
+                        className="px-3 py-1 bg-blue-50 text-blue-700 text-sm rounded-full font-medium border border-blue-200"
                       >
                         {lang}
                       </span>
                     ))}
                     {culture.language.length > 2 && (
                       <span className="px-3 py-1 bg-gray-100 text-[#4A4A4A] text-sm rounded-full font-medium">
-                        +{culture.language.length - 2}
+                        +{culture.language.length - 2} more
                       </span>
                     )}
                   </div>
                   
-                  <Link
-                    href={`/explore/${culture.id}`}
-                    className="inline-flex items-center text-orange-600 hover:text-orange-700 font-bold group-hover:translate-x-1 transition-transform duration-200"
-                  >
-                    Learn More
-                    <ArrowRight className="ml-2 w-4 h-4" />
-                  </Link>
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-3 gap-4 mb-6 text-center">
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <div className="text-xl font-bold text-orange-600">{culture.exhibitionsCount}</div>
+                      <div className="text-xs text-[#4A4A4A] font-medium">Exhibitions</div>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <div className="text-xl font-bold text-blue-600">{culture.resourcesCount}</div>
+                      <div className="text-xs text-[#4A4A4A] font-medium">Resources</div>
+                    </div>
+                    <div className="bg-gray-50 rounded-lg p-3">
+                      <div className="text-xl font-bold text-purple-600">{culture.storiesCount}</div>
+                      <div className="text-xs text-[#4A4A4A] font-medium">Stories</div>
+                    </div>
+                  </div>
+                  
+                  {/* Call to Action */}
+                  <div className="flex items-center justify-between">
+                    <Link
+                      href={`/explore/${culture.id}`}
+                      className="inline-flex items-center text-orange-600 hover:text-orange-700 font-bold group-hover:translate-x-1 transition-transform duration-200"
+                    >
+                      Learn More
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Link>
+                    
+                    <div className="text-sm text-[#4A4A4A]">
+                      {culture.population && (
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          {formatNumber(culture.population)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             ))}

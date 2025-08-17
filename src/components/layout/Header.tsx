@@ -8,25 +8,40 @@ import { useNostr } from '@/components/providers/NostrProvider'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { LoginModal } from '@/components/auth/LoginModal'
 import { UserProfile } from '@/components/auth/UserProfile'
+import { SearchInput } from '@/components/ui/SearchInput'
 
 const navigation = [
-  { name: 'Home', href: '/', icon: Globe },
-  { name: 'Explore Cultures', href: '/explore', icon: Globe },
+  { name: 'Explore', href: '/explore', icon: Globe, hasDropdown: true },
   { name: 'Exhibitions', href: '/exhibitions', icon: BookOpen },
+  { name: 'Community', href: '/community', icon: Users, hasDropdown: true },
   { name: 'Resources', href: '/downloads', icon: Download },
-  { name: 'Elder Voices', href: '/elder-voices', icon: Heart },
-  { name: 'Community', href: '/community', icon: Users },
-  { name: 'Language', href: '/language', icon: BookOpen },
   { name: 'About', href: '/about', icon: Globe },
+]
+
+const exploreDropdown = [
+  { name: 'Cultures', href: '/explore', icon: Globe },
+  { name: 'Elder Voices', href: '/elder-voices', icon: Heart },
+  { name: 'Language Learning', href: '/language', icon: BookOpen },
+]
+
+const communityDropdown = [
+  { name: 'Share Stories', href: '/contribute', icon: Heart },
+  { name: 'Discussions', href: '/community', icon: Users },
+  { name: 'Events', href: '/community', icon: Calendar },
 ]
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loginModalOpen, setLoginModalOpen] = useState(false)
   const [userProfileOpen, setUserProfileOpen] = useState(false)
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null)
   const pathname = usePathname()
   const { isEnabled, isConnected, connect } = useNostr()
   const { isAuthenticated, user } = useAuth()
+
+  const handleDropdownToggle = (navName: string) => {
+    setActiveDropdown(activeDropdown === navName ? null : navName)
+  }
 
   return (
     <header className="bg-white shadow-xl border-b border-gray-100 sticky top-0 z-50">
@@ -54,36 +69,78 @@ export default function Header() {
           </button>
         </div>
         
-        <div className="hidden lg:flex lg:gap-x-12">
+        <div className="hidden lg:flex lg:gap-x-8">
           {navigation.map((item) => {
-            const isActive = pathname === item.href
+            const isActive = pathname === item.href || 
+              (item.hasDropdown && (exploreDropdown.some(d => d.href === pathname) || communityDropdown.some(d => d.href === pathname)))
             return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`text-sm font-semibold leading-6 transition-all duration-300 px-4 py-3 rounded-xl relative group ${
-                  isActive
-                    ? 'text-orange-600 bg-orange-50'
-                    : 'text-[#4A4A4A] hover:text-[#1A1A2E] hover:bg-gray-50'
-                }`}
-              >
-                {item.name}
-                {/* Underline animation on hover */}
-                <span className={`absolute bottom-0 left-0 w-0 h-0.5 bg-orange-600 transition-all duration-300 group-hover:w-full ${
-                  isActive ? 'w-full' : ''
-                }`}></span>
-              </Link>
+              <div key={item.name} className="relative">
+                <button
+                  onClick={() => item.hasDropdown ? handleDropdownToggle(item.name) : null}
+                  className={`text-sm font-semibold leading-6 transition-all duration-300 px-4 py-3 rounded-xl relative group flex items-center gap-2 ${
+                    isActive
+                      ? 'text-orange-600 bg-orange-50'
+                      : 'text-[#4A4A4A] hover:text-[#1A1A2E] hover:bg-gray-50'
+                  }`}
+                >
+                  {item.name}
+                  {item.hasDropdown && (
+                    <svg className={`w-4 h-4 transition-transform duration-200 ${activeDropdown === item.name ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  )}
+                  {/* Underline animation on hover */}
+                  <span className={`absolute bottom-0 left-0 w-0 h-0.5 bg-orange-600 transition-all duration-300 group-hover:w-full ${
+                    isActive ? 'w-full' : ''
+                  }`}></span>
+                </button>
+                
+                {/* Dropdown Menu */}
+                {item.hasDropdown && activeDropdown === item.name && (
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
+                    {item.name === 'Explore' ? exploreDropdown.map((dropdownItem) => (
+                      <Link
+                        key={dropdownItem.name}
+                        href={dropdownItem.href}
+                        className="flex items-center gap-3 px-4 py-3 text-[#4A4A4A] hover:text-[#1A1A2E] hover:bg-orange-50 transition-colors"
+                      >
+                        <dropdownItem.icon className="w-4 h-4" />
+                        {dropdownItem.name}
+                      </Link>
+                    )) : communityDropdown.map((dropdownItem) => (
+                      <Link
+                        key={dropdownItem.name}
+                        href={dropdownItem.href}
+                        className="flex items-center gap-3 px-4 py-3 text-[#4A4A4A] hover:text-[#1A1A2E] hover:bg-orange-50 transition-colors"
+                      >
+                        <dropdownItem.icon className="w-4 h-4" />
+                        {dropdownItem.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
             )
           })}
+          
+          {/* Start Here Option */}
+          <Link
+            href="/start-here"
+            className="text-sm font-semibold leading-6 transition-all duration-300 px-4 py-3 rounded-xl bg-green-50 text-green-700 hover:bg-green-100 hover:text-green-800"
+          >
+            Start Here
+          </Link>
         </div>
         
         <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
+            <SearchInput 
               placeholder="Search cultures, stories..."
-              className="pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent w-72 bg-gray-50 hover:bg-white transition-colors shadow-sm"
+              onSearch={(query: string, filters: Record<string, string[]>) => {
+                console.log('Search:', query, filters)
+                // Handle search with filters
+              }}
+              className="w-80"
             />
           </div>
           

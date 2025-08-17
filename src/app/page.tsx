@@ -6,6 +6,7 @@ import { FeaturedCultures } from '@/components/home/FeaturedCultures'
 import { PlatformStats } from '@/components/home/PlatformStats'
 import { FeaturedExhibitions } from '@/components/home/FeaturedExhibitions'
 import { CallToAction } from '@/components/home/CallToAction'
+import { TrustSection } from '@/components/home/TrustSection'
 
 export default function HomePage() {
   return (
@@ -21,6 +22,9 @@ export default function HomePage() {
       
       {/* Featured Exhibitions */}
       <FeaturedExhibitions />
+      
+      {/* Trust & Social Proof */}
+      <TrustSection />
       
       {/* Call to Action */}
       <CallToAction />
