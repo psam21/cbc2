@@ -1,10 +1,22 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Users, Globe, BookOpen, Heart, TrendingUp } from 'lucide-react'
+import { useNostr } from '@/components/providers/NostrProvider'
+import { formatNumber } from '@/lib/utils'
 
-const stats = [
+interface PlatformStat {
+  id: number
+  name: string
+  value: string
+  icon: React.ComponentType<any>
+  description: string
+  color: string
+}
+
+// Fallback stats when Nostr is not available
+const fallbackStats: PlatformStat[] = [
   {
     id: 1,
     name: 'Cultures',
@@ -40,6 +52,85 @@ const stats = [
 ]
 
 export function PlatformStats() {
+  const { isEnabled, isInitialized, getService } = useNostr()
+  const [stats, setStats] = useState<PlatformStat[]>(fallbackStats)
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (isEnabled && isInitialized) {
+      loadPlatformStats()
+    }
+  }, [isEnabled, isInitialized])
+
+  const loadPlatformStats = async () => {
+    try {
+      setLoading(true)
+      
+      const service = getService()
+      
+      // Run parallel queries to get actual counts
+      const [cultures, exhibitions, resources, stories] = await Promise.all([
+        service.getCultures({ limit: 1 }),
+        service.getExhibitions({ limit: 1 }),
+        service.getResources({ limit: 1 }),
+        service.getElderStories({ limit: 1 })
+      ])
+
+      // Calculate unique languages and contributors
+      const allCultures = await service.getCultures({ limit: 100 })
+      const uniqueLanguages = new Set(
+        allCultures.data.flatMap(culture => culture.language)
+      ).size
+
+      const uniqueContributors = new Set(
+        [...allCultures.data, ...exhibitions.data, ...resources.data, ...stories.data]
+          .map(item => item.author)
+      ).size
+
+      const realStats: PlatformStat[] = [
+        {
+          id: 1,
+          name: 'Cultures',
+          value: formatNumber(cultures.pagination.total),
+          icon: Globe,
+          description: 'Indigenous and traditional communities',
+          color: 'from-primary-500 to-primary-600'
+        },
+        {
+          id: 2,
+          name: 'Languages',
+          value: formatNumber(uniqueLanguages),
+          icon: BookOpen,
+          description: 'Preserved and documented',
+          color: 'from-secondary-500 to-secondary-600'
+        },
+        {
+          id: 3,
+          name: 'Stories',
+          value: formatNumber(stories.pagination.total),
+          icon: Heart,
+          description: 'Elder voices and narratives',
+          color: 'from-cultural-500 to-cultural-600'
+        },
+        {
+          id: 4,
+          name: 'Contributors',
+          value: formatNumber(uniqueContributors),
+          icon: Users,
+          description: 'Active community members',
+          color: 'from-earth-500 to-earth-600'
+        }
+      ]
+
+      setStats(realStats)
+    } catch (err) {
+      console.error('Failed to load platform stats:', err)
+      // Keep fallback stats
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <section className="bg-white section-padding">
       <div className="container-max">
@@ -57,6 +148,12 @@ export function PlatformStats() {
             Our community has made significant progress in preserving cultural heritage 
             through collaborative efforts and shared knowledge.
           </p>
+          {isEnabled && isInitialized && (
+            <div className="mt-4 inline-flex items-center text-sm text-green-600">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+              {loading ? 'Calculating live metrics...' : 'Live metrics from Nostr network'}
+            </div>
+          )}
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

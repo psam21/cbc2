@@ -1,24 +1,33 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { ArrowRight, Users, MapPin, BookOpen } from 'lucide-react'
+import { useNostr } from '@/components/providers/NostrProvider'
+import { Culture } from '@/types/content'
+import { LoadingSpinner, SkeletonCard } from '@/components/ui/LoadingSpinner'
+import { formatNumber } from '@/lib/utils'
 
-// Mock data - in production this would come from Nostr NIP-51 lists
-const featuredCultures = [
+// Fallback data when Nostr is not available
+const fallbackCultures = [
   {
     id: '1',
     name: 'Maori',
     region: 'New Zealand',
     description: 'Indigenous Polynesian people of New Zealand with rich cultural traditions including haka, carving, and storytelling.',
     imageUrl: '/api/placeholder/400/300',
-    population: '775,000',
-    languages: ['Te Reo Māori', 'English'],
+    population: 775000,
+    language: ['Te Reo Māori', 'English'],
     exhibitionsCount: 12,
     resourcesCount: 45,
-    storiesCount: 89
+    storiesCount: 89,
+    tags: ['indigenous', 'polynesian'],
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+    author: 'npub1maori',
+    heroImage: '/api/placeholder/400/300'
   },
   {
     id: '2',
@@ -26,11 +35,16 @@ const featuredCultures = [
     region: 'Arctic',
     description: 'Indigenous peoples inhabiting the Arctic regions of Canada, Greenland, and Alaska with unique survival traditions.',
     imageUrl: '/api/placeholder/400/300',
-    population: '160,000',
-    languages: ['Inuktitut', 'Inupiaq', 'Yupik'],
+    population: 160000,
+    language: ['Inuktitut', 'Inupiaq', 'Yupik'],
     exhibitionsCount: 8,
     resourcesCount: 32,
-    storiesCount: 67
+    storiesCount: 67,
+    tags: ['indigenous', 'arctic'],
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+    author: 'npub1inuit',
+    heroImage: '/api/placeholder/400/300'
   },
   {
     id: '3',
@@ -38,15 +52,52 @@ const featuredCultures = [
     region: 'Australia',
     description: 'First Nations peoples of Australia with the world\'s oldest continuous living culture spanning over 65,000 years.',
     imageUrl: '/api/placeholder/400/300',
-    population: '798,000',
-    languages: ['250+ Indigenous languages'],
+    population: 798000,
+    language: ['Various Aboriginal languages'],
     exhibitionsCount: 15,
     resourcesCount: 78,
-    storiesCount: 156
+    storiesCount: 156,
+    tags: ['indigenous', 'ancient'],
+    createdAt: '2024-01-01T00:00:00Z',
+    updatedAt: '2024-01-01T00:00:00Z',
+    author: 'npub1aboriginal',
+    heroImage: '/api/placeholder/400/300'
   }
-]
+] as Culture[]
 
 export function FeaturedCultures() {
+  const { isEnabled, isInitialized, getService } = useNostr()
+  const [cultures, setCultures] = useState<Culture[]>(fallbackCultures)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (isEnabled && isInitialized) {
+      loadFeaturedCultures()
+    }
+  }, [isEnabled, isInitialized])
+
+  const loadFeaturedCultures = async () => {
+    try {
+      setLoading(true)
+      setError(null)
+      
+      const service = getService()
+      // Get featured cultures from NIP-51 lists or top cultures
+      const result = await service.getCultures({ limit: 3, sortBy: 'popular' })
+      
+      if (result.data.length > 0) {
+        setCultures(result.data.slice(0, 3))
+      }
+    } catch (err) {
+      console.error('Failed to load featured cultures:', err)
+      setError('Using cached featured cultures')
+      // Keep fallback data
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <section className="bg-gray-50 section-padding">
       <div className="container-max">
@@ -64,10 +115,23 @@ export function FeaturedCultures() {
             Discover the rich traditions and stories of cultures from around the world. 
             Each culture represents unique perspectives and valuable heritage.
           </p>
+          {isEnabled && isInitialized && (
+            <div className="mt-4 inline-flex items-center text-sm text-green-600">
+              <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+              Live data from Nostr network
+            </div>
+          )}
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {featuredCultures.map((culture, index) => (
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {cultures.map((culture, index) => (
             <motion.div
               key={culture.id}
               initial={{ opacity: 0, y: 20 }}
@@ -84,9 +148,17 @@ export function FeaturedCultures() {
               </div>
               
               <div className="p-6">
-                <div className="flex items-center space-x-2 mb-3">
-                  <MapPin className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-500">{culture.region}</span>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-2">
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <span className="text-sm text-gray-500">{culture.region}</span>
+                  </div>
+                  {culture.population && (
+                    <div className="flex items-center space-x-1">
+                      <Users className="w-3 h-3 text-gray-400" />
+                      <span className="text-xs text-gray-500">{formatNumber(culture.population)}</span>
+                    </div>
+                  )}
                 </div>
                 
                 <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors duration-200">
@@ -112,6 +184,23 @@ export function FeaturedCultures() {
                   </div>
                 </div>
                 
+                {/* Language tags */}
+                <div className="flex flex-wrap gap-1 mb-4">
+                  {culture.language.slice(0, 2).map((lang) => (
+                    <span
+                      key={lang}
+                      className="px-2 py-1 bg-primary-50 text-primary-700 text-xs rounded-full"
+                    >
+                      {lang}
+                    </span>
+                  ))}
+                  {culture.language.length > 2 && (
+                    <span className="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                      +{culture.language.length - 2}
+                    </span>
+                  )}
+                </div>
+                
                 <Link
                   href={`/explore/${culture.id}`}
                   className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium group-hover:translate-x-1 transition-transform duration-200"
@@ -122,7 +211,8 @@ export function FeaturedCultures() {
               </div>
             </motion.div>
           ))}
-        </div>
+          </div>
+        )}
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
