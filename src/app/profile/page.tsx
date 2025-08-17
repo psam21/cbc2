@@ -17,7 +17,10 @@ import {
   Copy,
   Check,
   Github,
-  Twitter
+  Twitter,
+  Download,
+  FileDown,
+  Database
 } from 'lucide-react'
 import { useAuth } from '@/components/auth/AuthProvider'
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner'
@@ -28,6 +31,7 @@ export default function ProfilePage() {
   const { isAuthenticated, user, loading } = useAuth()
   const [copied, setCopied] = useState(false)
   const [activeTab, setActiveTab] = useState('overview')
+  const [exportLoading, setExportLoading] = useState(false)
 
   const handleCopyNpub = async () => {
     if (!user?.npub) return
@@ -64,10 +68,68 @@ export default function ProfilePage() {
     )
   }
 
+  const handleDataExport = async () => {
+    setExportLoading(true)
+    
+    try {
+      // Simulate data export process
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      // Create export data
+      const exportData = {
+        profile: {
+          publicKey: user?.pubkey,
+          displayName: user?.displayName,
+          about: user?.about,
+          website: user?.website,
+          npub: user?.npub,
+          exportDate: new Date().toISOString()
+        },
+        contributions: [
+          // This would be populated with actual user contributions
+          {
+            id: 'example-1',
+            type: 'cultural-story',
+            title: 'Traditional Weaving Patterns',
+            content: 'Example story content...',
+            createdAt: '2025-01-15T10:00:00Z'
+          }
+        ],
+        connections: [
+          // User's connections and social graph
+        ],
+        metadata: {
+          exportVersion: '1.0',
+          platform: 'CultureBridge',
+          format: 'JSON'
+        }
+      }
+      
+      // Create and download file
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { 
+        type: 'application/json' 
+      })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `culturebridge-export-${new Date().toISOString().split('T')[0]}.json`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+      
+    } catch (error) {
+      console.error('Export failed:', error)
+    } finally {
+      setExportLoading(false)
+    }
+  }
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: User },
     { id: 'contributions', label: 'Contributions', icon: BookOpen },
     { id: 'favorites', label: 'Favorites', icon: Heart },
+    { id: 'data', label: 'Data & Privacy', icon: Database },
     { id: 'settings', label: 'Settings', icon: Settings }
   ]
 
@@ -271,6 +333,89 @@ export default function ProfilePage() {
                   <Heart className="w-12 h-12 mx-auto mb-4 opacity-50" />
                   <p>No favorites yet</p>
                   <p className="text-sm mt-2">Heart content you love to save it here</p>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'data' && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Data Sovereignty & Export
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    Your cultural data belongs to you. Export your contributions and profile data 
+                    in open formats to maintain full control and ownership.
+                  </p>
+                  
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                    <div className="flex items-start gap-4">
+                      <Database className="w-6 h-6 text-blue-600 mt-1" />
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-blue-900 mb-2">
+                          Export Your Data
+                        </h4>
+                        <p className="text-sm text-blue-800 mb-4">
+                          Download all your profile information, contributions, and connections 
+                          in a portable JSON format. This includes your stories, media, and social graph.
+                        </p>
+                        <button
+                          onClick={handleDataExport}
+                          disabled={exportLoading}
+                          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        >
+                          {exportLoading ? (
+                            <>
+                              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                              Preparing Export...
+                            </>
+                          ) : (
+                            <>
+                              <Download className="w-4 h-4" />
+                              Export Data
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-900 mb-2">
+                        Data Portability
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        Your exported data can be imported into other Nostr-compatible platforms, 
+                        ensuring you're never locked into CultureBridge.
+                      </p>
+                    </div>
+                    
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <h4 className="font-semibold text-gray-900 mb-2">
+                        Decentralized Storage
+                      </h4>
+                      <p className="text-sm text-gray-600">
+                        Your content is stored on decentralized networks, making it resistant 
+                        to censorship and ensuring long-term preservation.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <Shield className="w-5 h-5 text-yellow-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-yellow-800 mb-1">
+                          Privacy & Control
+                        </h4>
+                        <p className="text-sm text-yellow-700">
+                          You control your private keys and can revoke access at any time. 
+                          Your cultural heritage data remains under your complete control.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}

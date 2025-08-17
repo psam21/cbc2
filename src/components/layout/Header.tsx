@@ -148,13 +148,19 @@ export default function Header() {
                 >
                   Browse Cultures
                 </Link>
-                <button
-                  onClick={() => setLoginModalOpen(true)}
+                <Link
+                  href="/auth/signup"
+                  className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Sign Up
+                </Link>
+                <Link
+                  href="/auth/signin"
                   className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
                 >
                   <LogIn className="w-4 h-4" />
                   Sign In
-                </button>
+                </Link>
               </div>
             )}
           </div>

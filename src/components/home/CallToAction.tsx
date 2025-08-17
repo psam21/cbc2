@@ -4,8 +4,10 @@ import React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Heart, Users, Globe, BookOpen } from 'lucide-react'
+import { useAuth } from '@/components/auth/AuthProvider'
 
 export function CallToAction() {
+  const { isAuthenticated } = useAuth()
   return (
     <section className="bg-gradient-to-br from-primary-600 via-primary-700 to-cultural-700 text-white section-padding">
       <div className="container-max">
@@ -59,10 +61,10 @@ export function CallToAction() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                href="/contribute"
+                href={isAuthenticated ? "/contribute" : "/auth/signup"}
                 className="bg-white text-primary-700 hover:bg-gray-100 font-semibold py-4 px-8 rounded-lg transition-colors duration-200 text-lg group shadow-lg hover:shadow-xl"
               >
-                Start Contributing
+                Share Your Heritage
                 <ArrowRight className="ml-2 w-5 h-5 inline group-hover:translate-x-1 transition-transform duration-200" />
               </Link>
               
