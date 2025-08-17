@@ -1,5 +1,5 @@
 import React from 'react'
-import ExploreContent from '@/components/pages/ExploreContent'
+import { ExploreContent } from '@/components/pages/ExploreContent'
 
 export const metadata = {
   title: 'Explore Cultures - Culture Bridge',
