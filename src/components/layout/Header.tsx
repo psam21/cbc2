@@ -29,16 +29,16 @@ export default function Header() {
   const { isAuthenticated, user } = useAuth()
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <header className="bg-white shadow-lg border-b border-gray-100 sticky top-0 z-50">
       <nav className="mx-auto flex max-w-7xl items-center justify-between p-6 lg:px-8" aria-label="Global">
         <div className="flex lg:flex-1">
           <Link href="/" className="-m-1.5 p-1.5">
             <span className="sr-only">Culture Bridge</span>
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-cultural-600 rounded-lg flex items-center justify-center">
-                <Globe className="w-5 h-5 text-white" />
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Globe className="w-6 h-6 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900">Culture Bridge</span>
+              <span className="text-2xl font-bold text-gray-900">Culture Bridge</span>
             </div>
           </Link>
         </div>
@@ -46,7 +46,7 @@ export default function Header() {
         <div className="flex lg:hidden">
           <button
             type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            className="-m-2.5 inline-flex items-center justify-center rounded-xl p-2.5 text-gray-700 hover:bg-gray-100 transition-colors"
             onClick={() => setMobileMenuOpen(true)}
           >
             <span className="sr-only">Open main menu</span>
@@ -61,10 +61,10 @@ export default function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className={`text-sm font-semibold leading-6 transition-colors duration-200 ${
+                className={`text-sm font-semibold leading-6 transition-all duration-200 px-3 py-2 rounded-lg ${
                   isActive
-                    ? 'text-primary-600 border-b-2 border-primary-600'
-                    : 'text-gray-900 hover:text-primary-600'
+                    ? 'text-orange-600 bg-orange-50'
+                    : 'text-gray-700 hover:text-orange-600 hover:bg-orange-50'
                 }`}
               >
                 {item.name}
@@ -73,28 +73,28 @@ export default function Header() {
           })}
         </div>
         
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-4">
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end lg:gap-x-6">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search cultures, stories..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent w-64"
+              className="pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent w-72 bg-gray-50 hover:bg-white transition-colors"
             />
           </div>
           
           {/* Auth Section */}
           <div className="flex items-center space-x-4">
             {isEnabled && (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 bg-gray-50 px-3 py-2 rounded-lg">
                 <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 font-medium">
                   {isConnected ? 'Nostr Connected' : 'Nostr Disconnected'}
                 </span>
                 {!isConnected && (
                   <button
                     onClick={connect}
-                    className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                    className="text-sm text-orange-600 hover:text-orange-700 font-medium ml-2"
                   >
                     Connect
                   </button>
@@ -106,7 +106,7 @@ export default function Header() {
               <>
                 <Link
                   href="/contribute"
-                  className="btn-primary text-sm"
+                  className="inline-flex items-center justify-center px-6 py-3 bg-orange-600 text-white text-sm font-semibold rounded-xl hover:bg-orange-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
                 >
                   Share Your Heritage
                 </Link>
@@ -114,20 +114,20 @@ export default function Header() {
                 <div className="relative">
                   <button
                     onClick={() => setUserProfileOpen(!userProfileOpen)}
-                    className="flex items-center gap-2 p-2 text-gray-700 hover:text-gray-900 transition-colors"
+                    className="flex items-center gap-3 p-2 text-gray-700 hover:text-gray-900 transition-colors hover:bg-gray-100 rounded-lg"
                   >
                     {user?.picture ? (
                       <img 
                         src={user.picture} 
                         alt={user.displayName || 'User'}
-                        className="w-8 h-8 rounded-full object-cover"
+                        className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
                       />
                     ) : (
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                        <User className="w-4 h-4 text-purple-600" />
+                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center border-2 border-gray-200">
+                        <User className="w-5 h-5 text-purple-600" />
                       </div>
                     )}
-                    <span className="hidden md:block text-sm font-medium">
+                    <span className="hidden md:block text-sm font-semibold">
                       {user?.displayName || 'Profile'}
                     </span>
                   </button>
@@ -141,22 +141,22 @@ export default function Header() {
                 </div>
               </>
             ) : (
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-4">
                 <Link
                   href="/explore"
-                  className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                  className="text-sm text-gray-700 hover:text-orange-600 transition-colors font-medium"
                 >
                   Browse Cultures
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                  className="text-sm text-gray-700 hover:text-orange-600 transition-colors font-medium"
                 >
                   Sign Up
                 </Link>
                 <Link
                   href="/auth/signin"
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-xl hover:bg-orange-700 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl text-sm font-semibold"
                 >
                   <LogIn className="w-4 h-4" />
                   Sign In

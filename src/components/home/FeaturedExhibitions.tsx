@@ -68,25 +68,25 @@ const categoryColors: Record<ExhibitionCategory, string> = {
 
 export function FeaturedExhibitions() {
   return (
-    <section className="bg-white section-padding">
-      <div className="container-max">
+    <section className="bg-gray-50 py-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-20"
         >
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Featured Exhibitions
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed">
             Experience immersive cultural exhibitions that bring traditions to life through 
             artifacts, stories, and interactive experiences.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 mb-20">
           {featuredExhibitions.map((exhibition, index) => (
             <motion.div
               key={exhibition.id}
@@ -94,50 +94,50 @@ export function FeaturedExhibitions() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="card group hover:shadow-2xl transition-all duration-300"
+              className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 group overflow-hidden"
             >
-              <div className="relative h-48 overflow-hidden rounded-t-xl">
+              <div className="relative h-56 overflow-hidden">
                 <div className={`w-full h-full bg-gradient-to-br ${categoryColors[exhibition.category]} flex items-center justify-center`}>
-                  <Calendar className="w-16 h-16 text-white opacity-80" />
+                  <Calendar className="w-20 h-20 text-white opacity-80" />
                 </div>
                 <div className="absolute inset-0 bg-black bg-opacity-20 group-hover:bg-opacity-30 transition-all duration-300" />
                 
                 {/* Featured Badge */}
                 {exhibition.featured && (
-                  <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full text-xs font-bold">
+                  <div className="absolute top-4 right-4 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold shadow-lg">
                     Featured
                   </div>
                 )}
               </div>
               
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm font-medium text-primary-600 capitalize">
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-semibold text-orange-600 capitalize bg-orange-50 px-3 py-1 rounded-full">
                     {exhibition.category}
                   </span>
                   <div className="flex items-center space-x-1">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-medium text-gray-900">{exhibition.rating}</span>
+                    <span className="text-sm font-bold text-gray-900">{exhibition.rating}</span>
                     <span className="text-xs text-gray-500">({exhibition.reviewsCount})</span>
                   </div>
                 </div>
                 
-                <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors duration-200">
+                <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-orange-600 transition-colors duration-200">
                   {exhibition.title}
                 </h3>
                 
-                <p className="text-gray-600 mb-4 line-clamp-3">
+                <p className="text-gray-600 mb-6 leading-relaxed line-clamp-3">
                   {exhibition.description}
                 </p>
                 
-                <div className="space-y-2 mb-4 text-sm text-gray-500">
+                <div className="space-y-3 mb-6 text-sm text-gray-500">
                   <div className="flex items-center space-x-2">
-                    <MapPin className="w-4 h-4" />
-                    <span>{exhibition.location}</span>
+                    <MapPin className="w-4 h-4 text-gray-400" />
+                    <span className="font-medium">{exhibition.location}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>
+                    <Calendar className="w-4 h-4 text-gray-400" />
+                    <span className="font-medium">
                       {new Date(exhibition.startDate).toLocaleDateString()} - {new Date(exhibition.endDate).toLocaleDateString()}
                     </span>
                   </div>
@@ -145,10 +145,10 @@ export function FeaturedExhibitions() {
                 
                 <Link
                   href={`/exhibitions/${exhibition.id}`}
-                  className="inline-flex items-center text-primary-600 hover:text-primary-700 font-medium group-hover:translate-x-1 transition-transform duration-200"
+                  className="inline-flex items-center text-orange-600 hover:text-orange-700 font-semibold group-hover:translate-x-1 transition-transform duration-200"
                 >
                   View Exhibition
-                  <ArrowRight className="ml-1 w-4 h-4" />
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Link>
               </div>
             </motion.div>
@@ -164,10 +164,10 @@ export function FeaturedExhibitions() {
         >
           <Link
             href="/exhibitions"
-            className="btn-outline text-lg px-8 py-4 group"
+            className="inline-flex items-center justify-center px-10 py-5 border-2 border-orange-600 text-orange-600 text-xl font-semibold rounded-xl hover:bg-orange-600 hover:text-white transition-all duration-200 transform hover:scale-105"
           >
             View All Exhibitions
-            <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-200" />
+            <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-1 transition-transform duration-200" />
           </Link>
         </motion.div>
       </div>
