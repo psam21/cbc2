@@ -3,8 +3,11 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Globe, Users, BookOpen, Download, Calendar, Heart, Search } from 'lucide-react'
+import { Menu, X, Globe, Users, BookOpen, Download, Calendar, Heart, Search, User, LogIn } from 'lucide-react'
 import { useNostr } from '@/components/providers/NostrProvider'
+import { useAuth } from '@/components/auth/AuthProvider'
+import { LoginModal } from '@/components/auth/LoginModal'
+import { UserProfile } from '@/components/auth/UserProfile'
 
 const navigation = [
   { name: 'Home', href: '/', icon: Globe },
@@ -19,8 +22,11 @@ const navigation = [
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [loginModalOpen, setLoginModalOpen] = useState(false)
+  const [userProfileOpen, setUserProfileOpen] = useState(false)
   const pathname = usePathname()
   const { isEnabled, isConnected, connect } = useNostr()
+  const { isAuthenticated, user } = useAuth()
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
@@ -77,31 +83,89 @@ export default function Header() {
             />
           </div>
           
-          {isEnabled && (
-            <div className="flex items-center space-x-2">
-              <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-              <span className="text-sm text-gray-600">
-                {isConnected ? 'Nostr Connected' : 'Nostr Disconnected'}
-              </span>
-              {!isConnected && (
-                <button
-                  onClick={connect}
-                  className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+          {/* Auth Section */}
+          <div className="flex items-center space-x-4">
+            {isEnabled && (
+              <div className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+                <span className="text-sm text-gray-600">
+                  {isConnected ? 'Nostr Connected' : 'Nostr Disconnected'}
+                </span>
+                {!isConnected && (
+                  <button
+                    onClick={connect}
+                    className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    Connect
+                  </button>
+                )}
+              </div>
+            )}
+
+            {isAuthenticated ? (
+              <>
+                <Link
+                  href="/contribute"
+                  className="btn-primary text-sm"
                 >
-                  Connect
+                  Share Your Heritage
+                </Link>
+                
+                <div className="relative">
+                  <button
+                    onClick={() => setUserProfileOpen(!userProfileOpen)}
+                    className="flex items-center gap-2 p-2 text-gray-700 hover:text-gray-900 transition-colors"
+                  >
+                    {user?.picture ? (
+                      <img 
+                        src={user.picture} 
+                        alt={user.displayName || 'User'}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-purple-600" />
+                      </div>
+                    )}
+                    <span className="hidden md:block text-sm font-medium">
+                      {user?.displayName || 'Profile'}
+                    </span>
+                  </button>
+                  
+                  {userProfileOpen && (
+                    <UserProfile 
+                      isOpen={userProfileOpen} 
+                      onClose={() => setUserProfileOpen(false)} 
+                    />
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <Link
+                  href="/explore"
+                  className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                >
+                  Browse Cultures
+                </Link>
+                <button
+                  onClick={() => setLoginModalOpen(true)}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Sign In
                 </button>
-              )}
-            </div>
-          )}
-          
-          <Link
-            href="/contribute"
-            className="btn-primary text-sm"
-          >
-            Share Your Heritage
-          </Link>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
+      
+      {/* Login Modal */}
+      <LoginModal 
+        isOpen={loginModalOpen} 
+        onClose={() => setLoginModalOpen(false)} 
+      />
       
       {/* Mobile menu */}
       {mobileMenuOpen && (

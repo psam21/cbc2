@@ -4,7 +4,7 @@ Purpose: A structured backlog- End-to-end user flows implemented per page: list 
 
 ## 🚀 Project Status Summary
 
-**Last Updated:** 2025-01-17 | **Current Phase:** 2 | **Overall Progress:** 40%
+**Last Updated:** 2025-01-17 | **Current Phase:** 2 | **Overall Progress:** 32%
 
 ### Iteration Progress Overview
 
@@ -12,8 +12,8 @@ Purpose: A structured backlog- End-to-end user flows implemented per page: list 
 |-----------|-------|---------|----------|-------|----------------|
 | **Iteration 1** | 1 | ✅ **COMPLETED** | 100% | E0, E1, E2, E3, E11* | 2025-01-17 |
 | **Iteration 2** | 1 | ✅ **COMPLETED** | 100% | E8, E12 | 2025-01-17 |
-| **Iteration 3** | 2 | ✅ **COMPLETED** | 100% | E5 | 2025-01-17 |
-| **Iteration 4** | 2 | ✅ **COMPLETED** | 100% | E6, E7, E17 | 2025-01-17 |
+| **Iteration 3** | 2 | 🔄 **IN PROGRESS** | 85% | E5 | - |
+| **Iteration 4** | 2 | 🔄 **IN PROGRESS** | 85% | E6, E7, E17 | - |
 | **Iteration 5** | 2 | ⏳ **PENDING** | 0% | E10 | - |
 | **Iteration 6** | 3 | ⏳ **PENDING** | 0% | E16 | - |
 | **Iteration 7** | 3 | ⏳ **PENDING** | 0% | E13, E20, E26, E14 | - |
@@ -31,12 +31,12 @@ Purpose: A structured backlog- End-to-end user flows implemented per page: list 
 | **E1** | Data Backbone & Relay Bootstrap | ✅ **DONE** | P0 | 01,11,12,19 | 2025-01-17 |
 | **E2** | Media Resolution (NIP-94) | ✅ **DONE** | P0 | 94,01 | 2025-01-17 |
 | **E3** | Label Taxonomy & Filters | ✅ **DONE** | P0 | 68,12,01 | 2025-01-17 |
-| **E5** | Explore Integration (Cultures) | ✅ **DONE** | P0 | 33,68,94,12,01,19 | 2025-01-17 |
+| **E5** | Explore Integration (Cultures) | 🔄 **85% COMPLETE** | P0 | 33,68,94,12,01,19 | - |
 | **E8** | Home Metrics & Featured Blocks | ✅ **DONE** | P0 | 51,68,12,01 | 2025-01-17 |
 | **E12** | Curation Lists | ✅ **DONE** | P0 | 51,01 | 2025-01-17 |
 | **E11** | Sensitivity & Protected Content | 🔄 **IN PROGRESS** | P1 | 36,70,65,01 | - |
-| **E6** | Resources/Downloads Integration | ✅ **DONE** | P1 | 33,68,94,12,01 | 2025-01-17 |
-| **E7** | Elder Voices Integration | ✅ **DONE** | P1 | 23,94,68,25,12,01 | 2025-01-17 |
+| **E6** | Resources/Downloads Integration | 🔄 **85% COMPLETE** | P1 | 33,68,94,12,01 | - |
+| **E7** | Elder Voices Integration | 🔄 **85% COMPLETE** | P1 | 23,94,68,25,12,01 | - |
 | **E17** | Reactions & Highlights | ✅ **DONE** | P1 | 25,84,01 | 2025-01-17 |
 
 ### Current Deployment Status
@@ -48,6 +48,7 @@ Purpose: A structured backlog- End-to-end user flows implemented per page: list 
 
 ## Notes
 
+- **🚨 IMMEDIATE PRIORITY**: Complete detail pages for E5, E6, E7 before starting Iteration 5 (E10). These are critical for complete user flows: list → detail → back preserves state.
 - Preserve visual design; implement missing user flows as first-class work. Current pages are demo-only and many flows are non-functional.
 - Keep UI consistent; flip data via a feature flag. Fallback to existing mocks when disabled.
 - Map all work to referenced NIPs to preserve protocol rationale.
@@ -386,9 +387,9 @@ Each epic lists: motivation, NIPs, dependencies, affected files, acceptance crit
       - T3: Resolve long description (NIP-23) by reference
       - T4: Fetch artifact media (1063) and map to gallery items
 
-### Epic E5: Explore Integration (Cultures) ✅ **COMPLETED** (2025-01-17)
+### Epic E5: Explore Integration (Cultures) 🔄 **85% COMPLETE**
 
-- **Status**: ✅ **COMPLETED**
+- **Status**: 🔄 **85% COMPLETE**
 - Motivation: Implement the primary user discovery journey from home page - the core value proposition where users explore and learn about different cultures.
 - NIPs: 33 (30001), 68, 94, 12, 01, 19
 - Dependencies: E0–E3
@@ -396,10 +397,10 @@ Each epic lists: motivation, NIPs, dependencies, affected files, acceptance crit
 - Acceptance criteria: Cultures list uses 30001; detail aggregates counts; featured via NIP-51 when available; serves as foundation for user understanding of platform content.
 - **Definition of Done:**
   - ✅ Cultures list loads from NIP-33 kind 30001 events with region/language facets
-  - ✅ Culture detail pages show related exhibitions, resources, and stories counts
+  - ❌ Culture detail pages show related exhibitions, resources, and stories counts
   - ✅ "Featured" cultures use NIP-51 curation lists when available
   - ✅ Search works for culture and community names with instant feedback
-  - ✅ Clicking content counts navigates to filtered views (e.g., exhibitions for this culture)
+  - ❌ Clicking content counts navigates to filtered views (e.g., exhibitions for this culture)
   - ✅ Mobile responsive: culture cards display properly on all screen sizes
   - ✅ Performance: culture images load progressively with blur-to-sharp transition
   - ✅ User test: new user can discover and understand cultures within 2 minutes
@@ -409,6 +410,10 @@ Each epic lists: motivation, NIPs, dependencies, affected files, acceptance crit
   - ✅ Added pagination and infinite scroll capabilities
   - ✅ Implemented real-time Nostr data loading with fallbacks
   - ✅ Enhanced mobile responsiveness and accessibility
+- **Remaining Tasks:**
+  - ❌ **CRITICAL**: Implement `/explore/[id]` dynamic detail page routes
+  - ❌ **CRITICAL**: Build culture detail pages with related content aggregation
+  - ❌ **CRITICAL**: Add navigation from detail pages back to filtered explore views
 - Stories
   - S0: Flow wiring (facets + deep links)
     - Tasks
@@ -423,8 +428,9 @@ Each epic lists: motivation, NIPs, dependencies, affected files, acceptance crit
     - Tasks
       - T2: Aggregate related exhibitions/resources/stories by culture label
 
-### Epic E6: Resources/Downloads Integration
+### Epic E6: Resources/Downloads Integration 🔄 **85% COMPLETE**
 
+- **Status**: 🔄 **85% COMPLETE**
 - NIPs: 33 (30003), 68, 94, 12, 01
 - Dependencies: E0–E3
 - Affected files: `src/components/pages/DownloadsContent.tsx`; `src/app/downloads/*`; `src/app/downloads/[id]/page.tsx`; `src/data/resources.ts`
@@ -435,9 +441,13 @@ Each epic lists: motivation, NIPs, dependencies, affected files, acceptance crit
   - ✅ Download buttons trigger actual file downloads with progress indication
   - ✅ File size and type information displays accurately before download
   - ✅ 404 handling: missing files show helpful error with alternative suggestions
-  - ✅ Preview functionality works for PDFs, images, and audio files
+  - ❌ Preview functionality works for PDFs, images, and audio files
   - ✅ Mobile UX: downloads work on mobile devices with proper handling
   - ✅ Analytics: track download counts for popular resource identification
+- **Remaining Tasks:**
+  - ❌ **CRITICAL**: Implement `/downloads/[id]` dynamic detail page routes
+  - ❌ **CRITICAL**: Build resource detail pages with preview functionality
+  - ❌ **CRITICAL**: Add media preview for PDFs, images, and audio files
 - Stories
   - S0: Flow wiring (filters/sort + downloads)
     - Tasks
@@ -451,8 +461,9 @@ Each epic lists: motivation, NIPs, dependencies, affected files, acceptance crit
     - Tasks
       - T2: Resolve primary asset and preview image via NIP-94
 
-### Epic E7: Elder Voices Integration (+ Reactions)
+### Epic E7: Elder Voices Integration (+ Reactions) 🔄 **85% COMPLETE**
 
+- **Status**: 🔄 **85% COMPLETE**
 - NIPs: 23, 94, 68, 25, 12, 01
 - Dependencies: E0–E3
 - Affected files: `src/components/pages/ElderVoicesContent.tsx`; `src/data/elderStories.ts`; `src/app/elder-voices/*`
@@ -462,10 +473,14 @@ Each epic lists: motivation, NIPs, dependencies, affected files, acceptance crit
   - ✅ Audio playback controls work (play/pause/scrub) with duration display
   - ✅ Star ratings computed from NIP-25 reactions display accurately
   - ✅ Rating submission sends NIP-25 events with optimistic UI updates
-  - ✅ Category filtering preserves state when navigating between stories
+  - ❌ Category filtering preserves state when navigating between stories
   - ✅ Transcript toggle works when available (accessibility requirement)
   - ✅ Mobile audio: playback controls work on iOS and Android devices
   - ✅ Emotional impact: users report feeling connected to elder stories
+- **Remaining Tasks:**
+  - ❌ **CRITICAL**: Implement `/elder-voices/[id]` dynamic detail page routes
+  - ❌ **CRITICAL**: Build individual story detail pages with full transcript display
+  - ❌ **CRITICAL**: Add navigation between stories while preserving category filters
 - Stories
   - S0: Flow wiring (audio playback + ratings)
     - Tasks
