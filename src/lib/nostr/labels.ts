@@ -146,9 +146,9 @@ export class LabelTaxonomy {
    */
   getAvailableNamespaces(): Label['namespace'][] {
     const namespaces = new Set<Label['namespace']>()
-    for (const label of this.labels.values()) {
+    Array.from(this.labels.values()).forEach(label => {
       namespaces.add(label.namespace)
-    }
+    })
     return Array.from(namespaces).sort()
   }
 
@@ -196,9 +196,9 @@ export class LabelTaxonomy {
       type: 0
     }
 
-    for (const label of this.labels.values()) {
+    Array.from(this.labels.values()).forEach(label => {
       namespaceCounts[label.namespace]++
-    }
+    })
 
     return {
       totalLabels: this.labels.size,
